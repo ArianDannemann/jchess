@@ -8,6 +8,12 @@ public class Position
     private int file;
     private int rank;
 
+    public Position (Position origin, int fileOffset, int rankOffset)
+    {
+        this.file = origin.getFile() + fileOffset;
+        this.rank = origin.getRank() + rankOffset;
+    }
+
     public Position (int file, int rank)
     {
         this.file = file;

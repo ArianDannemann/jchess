@@ -35,18 +35,49 @@ public class BoardManager
     }
 
     /**
+     * Creates a copy of a given board that can be altered without changing the original
+     * @param board The board we want to copy
+     * @return An independent copy of the given board
+     */
+    public static Board copyBoard (Board board)
+    {
+        Piece[] pieces = board.getPieces();
+        Board copiedBoard = new Board();
+
+        for (Piece piece : pieces)
+        {
+            Piece copiedPiece = new Piece(piece.getPosition(), piece.getType(), piece.getColor());
+            BoardManager.addPiece(copiedBoard, copiedPiece);
+        }
+
+        return copiedBoard;
+    }
+
+    /**
      * Moves a piece from <i>oldPosition</i> to <i>newPosition</i>
      * @param board The board that the piece is on
      * @param oldPosition The current position of the piece
      * @param newPosition The position where it should move to
-     * @return <i>true</i> if the piece was moved, <i>false</i> if the piece could not be moved. This may be the case if there is no piece at the given position or it is trying to take another piece of the same color
+     * @return <i>true</i> if the piece was moved, <i>false</i> if the piece could not be moved. This may be the case if the move is considered illegal according to chess rules
      */
     public static boolean movePiece (Board board, Position oldPosition, Position newPosition)
     {
-        Piece pieceToMove = BoardManager.getPieceAtPosition(board, oldPosition);
+        return movePiece(board, BoardManager.getPieceAtPosition(board, oldPosition), newPosition);
+    }
+
+    /**
+     * Moves a given piece to <i>newPosition</i>
+     * @param board The board that the piece is on
+     * @param piece The piece that should be moved
+     * @param newPosition The position where it should move to
+     * @return <i>true</i> if the piece was moved, <i>false</i> if the piece could not be moved. This may be the case if the move is considered illegal according to chess rules
+     */
+    public static boolean movePiece (Board board, Piece piece, Position newPosition)
+    {
+        Piece pieceToMove = piece;
         Piece pieceToAttack = BoardManager.getPieceAtPosition(board, newPosition);
 
-        if (pieceToMove == null)
+        if (pieceToMove == null || !MoveManager.isMoveLegal(board, piece, newPosition))
         {
             return false;
         }
@@ -112,6 +143,11 @@ public class BoardManager
         board.setPieces(newPieces);
 
         return true;
+    }
+
+    public static boolean removePiece (Board board, Position position)
+    {
+        return removePiece(board, BoardManager.getPieceAtPosition(board, position));
     }
 
     /**

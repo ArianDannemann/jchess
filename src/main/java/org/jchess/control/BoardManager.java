@@ -34,6 +34,20 @@ public class BoardManager
         return board;
     }
 
+    public static Board copyBoard (Board board)
+    {
+        Piece[] pieces = board.getPieces();
+        Board copiedBoard = new Board();
+
+        for (Piece piece : pieces)
+        {
+            Piece copiedPiece = new Piece(piece.getPosition(), piece.getType(), piece.getColor());
+            BoardManager.addPiece(copiedBoard, copiedPiece);
+        }
+
+        return copiedBoard;
+    }
+
     /**
      * Moves a piece from <i>oldPosition</i> to <i>newPosition</i>
      * @param board The board that the piece is on
@@ -112,6 +126,11 @@ public class BoardManager
         board.setPieces(newPieces);
 
         return true;
+    }
+
+    public static boolean removePiece (Board board, Position position)
+    {
+        return removePiece(board, BoardManager.getPieceAtPosition(board, position));
     }
 
     /**

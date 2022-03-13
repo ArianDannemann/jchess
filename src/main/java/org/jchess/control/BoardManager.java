@@ -65,7 +65,7 @@ public class BoardManager
         Piece pieceToMove = piece;
         Piece pieceToAttack = BoardManager.getPieceAtPosition(board, newPosition);
 
-        if (pieceToMove == null)
+        if (pieceToMove == null || !MoveManager.isMoveLegal(board, piece, newPosition))
         {
             return false;
         }

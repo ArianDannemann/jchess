@@ -1,7 +1,6 @@
 package org.jchess.control;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.jchess.model.Board;
 import org.jchess.model.Color;

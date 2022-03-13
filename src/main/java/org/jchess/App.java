@@ -16,7 +16,5 @@ public class App
     {
         Board board = BoardManager.generateBoard();
         UI.printBoard(board);
-
-        // This is a test
     }
 }

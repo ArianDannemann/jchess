@@ -53,6 +53,8 @@ public class BoardManager
         return copiedBoard;
     }
 
+    // TODO: Add support for standard chess notation input (i.e. Ke5...)
+
     /**
      * Moves a piece from <i>oldPosition</i> to <i>newPosition</i>
      * @param board The board that the piece is on

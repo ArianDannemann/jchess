@@ -5,6 +5,8 @@ package org.jchess.model;
  */
 public class Board
 {
+    // TODO: Add support for playing side color
+
     // A list of all the pieces on the board
     private Piece[] pieces = new Piece[0];
 

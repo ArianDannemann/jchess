@@ -8,6 +8,8 @@ public class Position
     private int file;
     private int rank;
 
+    // TODO: Override toString() method
+
     public Position (Position origin, int fileOffset, int rankOffset)
     {
         this.file = origin.getFile() + fileOffset;

@@ -12,6 +12,9 @@ import org.jchess.model.Position;
  */
 public class MoveManager
 {
+    // TODO: Add support for special moves like:
+    // castling, promoting, en-passant
+
     /**
      * Checks if a move is considere legal according to chess ruels
      * @param board The board the move is played on

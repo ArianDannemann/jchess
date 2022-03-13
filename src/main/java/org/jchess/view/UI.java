@@ -11,6 +11,8 @@ import org.jchess.model.Position;
  */
 public class UI
 {
+    // TODO: Add option for user input
+
     /**
      * Prints the current position on a board to the console
      * @param board The board to be printed

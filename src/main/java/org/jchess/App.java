@@ -2,6 +2,9 @@ package org.jchess;
 
 import org.jchess.control.BoardManager;
 import org.jchess.model.Board;
+import org.jchess.model.Color;
+import org.jchess.model.Piece;
+import org.jchess.model.PieceType;
 import org.jchess.model.Position;
 import org.jchess.view.UI;
 
@@ -15,11 +18,14 @@ public class App
 {
     public static void main (String[] args)
     {
-        Board board = BoardManager.generateBoard();
-        Board board2 = BoardManager.copyBoard(board);
-        BoardManager.movePiece(board2, new Position(4, 0), new Position(4, 4));
-        BoardManager.removePiece(board, new Position(0, 0));
+        Board board = new Board();
+        Piece testPiece = new Piece(new Position(2, 6), PieceType.PAWN, Color.BLACK);
+
+        BoardManager.addPiece(board, testPiece);
+        BoardManager.addPiece(board, new Position(1, 5), PieceType.PAWN, Color.WHITE);
+        //BoardManager.addPiece(board, new Position(0, 1), PieceType.PAWN, Color.WHITE);
+
         UI.printBoard(board);
-        UI.printBoard(board2);
+        UI.printBoardWithValidMoves(board, testPiece);
     }
 }

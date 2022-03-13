@@ -1,8 +1,10 @@
 package org.jchess.view;
 
+import org.jchess.control.MoveManager;
 import org.jchess.model.Board;
 import org.jchess.model.Color;
 import org.jchess.model.Piece;
+import org.jchess.model.Position;
 
 /**
  * This is a utility class for displaying information to the user
@@ -36,8 +38,7 @@ public class UI
                         continue;
                     }
 
-                    if (piece.getPosition().getFile() == file
-                        && piece.getPosition().getRank() == rank)
+                    if (Position.equals(piece.getPosition(), new Position(file, rank)))
                     {
                         System.out.print(UI.getPieceAbbreviation(piece));
                         pieceFound = true;
@@ -50,6 +51,73 @@ public class UI
                 {
                     System.out.print('.');
                 }
+
+                if (file == 7)
+                {
+                    System.out.println(' ');
+                }
+            }
+        }
+
+        System.out.println(' ');
+
+        System.out.println("Piece count: " + board.getPieces().length);
+    }
+
+    public static void printBoardWithValidMoves (Board board, Piece targetPiece)
+    {
+        Piece[] pieces = board.getPieces();
+        Position[] targetPositions = MoveManager.getLegalMoves(board, targetPiece);
+        int file;
+        int rank;
+
+        if (targetPositions == null)
+        {
+            System.out.println("No target positions for piece");
+            return;
+        }
+
+        System.out.println(' ');
+
+        for (rank = 7; rank > -1; rank --)
+        {
+            for (file = 0; file < 8; file ++)
+            {
+                boolean pieceFound = false;
+                char ch = ' ';
+
+                System.out.print(' ');
+
+                for (Piece piece : pieces)
+                {
+                    if (piece == null)
+                    {
+                        continue;
+                    }
+
+                    if (Position.equals(piece.getPosition(), new Position(file, rank)))
+                    {
+                        ch = UI.getPieceAbbreviation(piece);
+                        pieceFound = true;
+
+                        break;
+                    }
+                }
+
+                if (!pieceFound)
+                {
+                    ch = '.';
+                }
+
+                for (Position targePosition : targetPositions)
+                {
+                    if (Position.equals(new Position(file, rank), targePosition))
+                    {
+                        ch = '_';
+                    }
+                }
+
+                System.out.print(ch);
 
                 if (file == 7)
                 {

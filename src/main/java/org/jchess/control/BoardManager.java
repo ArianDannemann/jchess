@@ -57,7 +57,12 @@ public class BoardManager
      */
     public static boolean movePiece (Board board, Position oldPosition, Position newPosition)
     {
-        Piece pieceToMove = BoardManager.getPieceAtPosition(board, oldPosition);
+        return movePiece(board, BoardManager.getPieceAtPosition(board, oldPosition), newPosition);
+    }
+
+    public static boolean movePiece (Board board, Piece piece, Position newPosition)
+    {
+        Piece pieceToMove = piece;
         Piece pieceToAttack = BoardManager.getPieceAtPosition(board, newPosition);
 
         if (pieceToMove == null)

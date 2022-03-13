@@ -64,6 +64,11 @@ public class UI
         System.out.println("Piece count: " + board.getPieces().length);
     }
 
+    /**
+     * Prints the current position on the given board with markers that indicate all spaces the given piece could move to
+     * @param board The board we want to print
+     * @param targetPiece The piece of which the legal moves should be displayed
+     */
     public static void printBoardWithValidMoves (Board board, Piece targetPiece)
     {
         Piece[] pieces = board.getPieces();

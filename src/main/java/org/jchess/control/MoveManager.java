@@ -12,6 +12,13 @@ import org.jchess.model.Position;
  */
 public class MoveManager
 {
+    /**
+     * Checks if a move is considere legal according to chess ruels
+     * @param board The board the move is played on
+     * @param piece The pieces that should be moved
+     * @param position The position to which the piece should be moved
+     * @return Whether or not the move can legally be played
+     */
     public static boolean isMoveLegal (Board board, Piece piece, Position position)
     {
         Position[] legalPositions = MoveManager.getLegalMoves(board, piece);
@@ -27,6 +34,12 @@ public class MoveManager
         return false;
     }
 
+    /**
+     * Gets a list of all legal moves for a given chess piece
+     * @param board The board on which the piece is standing
+     * @param piece The piece of which we want to know the legal moves
+     * @return List of all legal moves of the given piece
+     */
     public static Position[] getLegalMoves (Board board, Piece piece)
     {
         ArrayList<Position> legalMoves = new ArrayList<>();
@@ -134,6 +147,14 @@ public class MoveManager
         return result;
     }
 
+    /**
+     * Works like {@link #tryAddLegalMove(Board, ArrayList, Position, Color)} but scans all position in a line from a given origin in a given direction. It will stop scanning once a piece obscure the given path
+     * @param board The board on which we want to move
+     * @param legalMoves A list of all legal moves so far, this is were the new move will be added to
+     * @param origin The position from which we want to cast a line trace
+     * @param direction The direction in which we want to cast a line trace
+     * @param originatingPieceColor The color of the moving piece
+     */
     private static void tryAddLegalMoveLine (Board board, ArrayList<Position> legalMoves, Position origin, Position direction, Color originatingPieceColor)
     {
         int i = 0;
@@ -151,6 +172,14 @@ public class MoveManager
         }
     }
 
+    /**
+     * Tries to add a possible legal move to a list of moves. Used for dynamically adding canditates of legal moves while generating the list of legal moves for a piece
+     * @param board The board on which we want to move
+     * @param legalMoves A list of all legal moves so far, this is were the new move will be added to
+     * @param position The position we are trying to reach
+     * @param originatingPieceColor The color of the moving piece
+     * @return Whether the move was added as a legal move
+     */
     private static boolean tryAddLegalMove (Board board, ArrayList<Position> legalMoves, Position position, Color originatingPieceColor)
     {
         Piece pieceAtPosition = BoardManager.getPieceAtPosition(board, position);

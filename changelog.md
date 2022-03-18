@@ -7,6 +7,10 @@ Plans:
 * Add support for special moves
 * Give the user the option to enter next moves via keyboard
 
+Notes:
+* Added support for playing side color
+* Positions can now be entered in chess notation, i.e. e4, d7, ...
+
 ## Version 0.2
 
 Notes:

@@ -16,7 +16,7 @@ public class BoardManager
      * Generates a board with the standard chess position
      * @return A default chess board
      */
-    public static Board generateBoard ()
+    public static Board generateBoard()
     {
         return generateBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     }
@@ -26,10 +26,15 @@ public class BoardManager
      * @param FEN The standard FEN notation for a chess position
      * @return A board with placed pieces
      */
-    public static Board generateBoard (String FEN)
+    public static Board generateBoard(String FEN)
     {
         Board board = new Board();
+
+        // NOTE: Would be nicer if FEN was split into string array, and only applicable string was passed to methods
+
         BoardManager.addPiecesFromFEN(board, FEN);
+        // NOTE: Would be nicer if there was a method like setPlayingSideFromFEN
+        board.setPlayingSideColor(BoardManager.getPlayingSideFromFEN(FEN));
 
         return board;
     }
@@ -39,7 +44,7 @@ public class BoardManager
      * @param board The board we want to copy
      * @return An independent copy of the given board
      */
-    public static Board copyBoard (Board board)
+    public static Board copyBoard(Board board)
     {
         Piece[] pieces = board.getPieces();
         Board copiedBoard = new Board();
@@ -62,7 +67,7 @@ public class BoardManager
      * @param newPosition The position where it should move to
      * @return <i>true</i> if the piece was moved, <i>false</i> if the piece could not be moved. This may be the case if the move is considered illegal according to chess rules
      */
-    public static boolean movePiece (Board board, Position oldPosition, Position newPosition)
+    public static boolean movePiece(Board board, Position oldPosition, Position newPosition)
     {
         return movePiece(board, BoardManager.getPieceAtPosition(board, oldPosition), newPosition);
     }
@@ -74,33 +79,47 @@ public class BoardManager
      * @param newPosition The position where it should move to
      * @return <i>true</i> if the piece was moved, <i>false</i> if the piece could not be moved. This may be the case if the move is considered illegal according to chess rules
      */
-    public static boolean movePiece (Board board, Piece piece, Position newPosition)
+    public static boolean movePiece(Board board, Piece piece, Position newPosition)
     {
         Piece pieceToMove = piece;
         Piece pieceToAttack = BoardManager.getPieceAtPosition(board, newPosition);
 
-        if (pieceToMove == null || !MoveManager.isMoveLegal(board, piece, newPosition))
+        if (pieceToMove == null
+            || !MoveManager.isMoveLegal(board, piece, newPosition)
+            || pieceToMove.getColor() != board.getPlayingSideColor())
         {
             return false;
         }
 
+        // If there is no piece at the target position...
         if (pieceToAttack == null)
         {
             pieceToMove.setPosition(newPosition);
 
+            BoardManager.switchPlayingSideColor(board);
+
             return true;
         }
+        // If there is an enemy piece at the target position...
         else if (pieceToAttack.getColor() != pieceToMove.getColor())
         {
             BoardManager.removePiece(board, pieceToAttack);
             pieceToMove.setPosition(newPosition);
 
+            BoardManager.switchPlayingSideColor(board);
+
             return true;
         }
+        // If there is a friendly piece at the target position...
         else
         {
             return false;
         }
+    }
+
+    public static void switchPlayingSideColor(Board board)
+    {
+        board.setPlayingSideColor(board.getPlayingSideColor() == Color.WHITE ? Color.BLACK : Color.WHITE);
     }
 
     /**
@@ -111,7 +130,7 @@ public class BoardManager
      * @param color The color of the new piece
      * @return <i>true</i> if the piece was added, <i>false</i> if the piece could not be added. This may be because there already is a piece at the specified location
      */
-    public static boolean addPiece (Board board, Position position, PieceType type, Color color)
+    public static boolean addPiece(Board board, Position position, PieceType type, Color color)
     {
         return addPiece(board, new Piece(position, type, color));
     }
@@ -122,7 +141,7 @@ public class BoardManager
      * @param piece The piece that should be added
      * @return <i>true</i> if the piece was added, <i>false</i> if the piece could not be added. This may be because there already is a piece at the specified location
      */
-    public static boolean addPiece (Board board, Piece piece)
+    public static boolean addPiece(Board board, Piece piece)
     {
         Piece[] oldPieces = board.getPieces();
         Piece[] newPieces = new Piece[oldPieces.length + 1];
@@ -147,7 +166,7 @@ public class BoardManager
         return true;
     }
 
-    public static boolean removePiece (Board board, Position position)
+    public static boolean removePiece(Board board, Position position)
     {
         return removePiece(board, BoardManager.getPieceAtPosition(board, position));
     }
@@ -158,7 +177,7 @@ public class BoardManager
      * @param piece The piece that should be removed
      * @return <i>true</i> if the piece was removed, <i>false</i> if the piece could not be removed. This may be because there is no piece at the specified location
      */
-    public static boolean removePiece (Board board, Piece piece)
+    public static boolean removePiece(Board board, Piece piece)
     {
         Piece[] oldPieces = board.getPieces();
         Piece[] newPieces = new Piece[oldPieces.length - 1];
@@ -192,7 +211,7 @@ public class BoardManager
      * @param FEN The FEN string of the chess position
      * @return A list of pieces, placed according to the FEN string. May contain <i>null</i> elements
      */
-    public static void addPiecesFromFEN (Board board, String FEN)
+    public static void addPiecesFromFEN(Board board, String FEN)
     {
         String pieceSetupString = FEN.split(" ")[0];
         int file = 0;
@@ -252,7 +271,7 @@ public class BoardManager
      * @param abbreviation The character that represents the piece type
      * @return The piece type represented by the character
      */
-    public static PieceType getTypeFromAbbreviation (char abbreviation)
+    public static PieceType getTypeFromAbbreviation(char abbreviation)
     {
         switch (abbreviation)
         {
@@ -291,7 +310,7 @@ public class BoardManager
      * @param position The position of the piece
      * @return The piece at the given position
      */
-    public static Piece getPieceAtPosition (Board board, Position position)
+    public static Piece getPieceAtPosition(Board board, Position position)
     {
         Piece[] pieces = board.getPieces();
 
@@ -306,5 +325,12 @@ public class BoardManager
         }
 
         return null;
+    }
+
+    public static Color getPlayingSideFromFEN(String FEN)
+    {
+        char playingSideString = FEN.split(" ")[1].toCharArray()[0];
+
+        return playingSideString == 'w' ? Color.WHITE : Color.BLACK;
     }
 }

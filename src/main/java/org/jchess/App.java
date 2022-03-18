@@ -15,10 +15,11 @@ public class App
 {
     public static void main(String[] args)
     {
-        Board board = BoardManager.generateBoard();
+        Board board = BoardManager.generateBoard("rk2k1kr/8/8/8/8/8/8/8 w - - 0 1");
 
-        BoardManager.movePiece(board, new Position("e2"), new Position("e4"));
+        //BoardManager.movePiece(board, new Position("a1"), new Position("a5"));
 
         UI.printBoard(board);
+        UI.printBoardWithValidMoves(board, BoardManager.getPieceAtPosition(board, new Position("e8")));
     }
 }

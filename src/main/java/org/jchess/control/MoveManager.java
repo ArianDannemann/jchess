@@ -2,9 +2,11 @@ package org.jchess.control;
 
 import java.util.ArrayList;
 
+import org.jchess.exceptions.PieceNotFoundException;
 import org.jchess.model.Board;
 import org.jchess.model.Color;
 import org.jchess.model.Piece;
+import org.jchess.model.PieceType;
 import org.jchess.model.Position;
 
 /**
@@ -22,7 +24,7 @@ public class MoveManager
      * @param position The position to which the piece should be moved
      * @return Whether or not the move can legally be played
      */
-    public static boolean isMoveLegal (Board board, Piece piece, Position position)
+    public static boolean isMoveLegal(Board board, Piece piece, Position position)
     {
         Position[] legalPositions = MoveManager.getLegalMoves(board, piece);
 
@@ -43,10 +45,15 @@ public class MoveManager
      * @param piece The piece of which we want to know the legal moves
      * @return List of all legal moves of the given piece
      */
-    public static Position[] getLegalMoves (Board board, Piece piece)
+    public static Position[] getLegalMoves(Board board, Piece piece)
     {
         ArrayList<Position> legalMoves = new ArrayList<>();
         Position[] result;
+
+        if (piece == null)
+        {
+            throw new PieceNotFoundException();
+        }
 
         switch (piece.getType()) {
             case KING:
@@ -64,6 +71,43 @@ public class MoveManager
                         }
                     }
                 }
+
+                if (piece.getHasMoved())
+                {
+                    break;
+                }
+
+                // --- Castling ---
+
+                // Get how many squares are empty left and right of the king
+                Position[] lineMovesLeft = castRayLine(board, piece.getPosition(), new Position(-1, 0), piece.getColor());
+                Position[] lineMovesRight = castRayLine(board, piece.getPosition(), new Position(1, 0), piece.getColor());
+
+                if ((piece.getColor() == Color.WHITE && piece.getPosition().getRank() != 0)
+                    || (piece.getColor() == Color.BLACK && piece.getPosition().getRank() != 7))
+                {
+                    break;
+                }
+
+                Piece leftMostPiece = BoardManager.getPieceAtPosition(board, new Position(piece.getPosition(), -4, 0));
+                Piece rightMostPiece = BoardManager.getPieceAtPosition(board, new Position(piece.getPosition(), 3, 0));
+
+                if (lineMovesLeft.length == 3
+                    && leftMostPiece != null
+                    && leftMostPiece.getType() == PieceType.ROOK
+                    && !leftMostPiece.getHasMoved())
+                {
+                    legalMoves.add(new Position(piece.getPosition(), -2, 0));
+                }
+
+                if (lineMovesRight.length == 2
+                    && rightMostPiece != null
+                    && rightMostPiece.getType() == PieceType.ROOK
+                    && !rightMostPiece.getHasMoved())
+                {
+                    legalMoves.add(new Position(piece.getPosition(), 2, 0));
+                }
+
                 break;
 
             case KNIGHT:
@@ -173,6 +217,35 @@ public class MoveManager
                 return;
             }
         }
+    }
+
+    private static Position[] castRayLine(Board board, Position origin, Position direction, Color originatingPieceColor)
+    {
+        ArrayList<Position> legalMoves = new ArrayList<>();
+        Position[] result = null;
+        int i = 0;
+        int j = 0;
+
+        for (i = 1; i < 8; i ++)
+        {
+            Position position = new Position(origin, direction.getFile() * i, direction.getRank() * i);
+            Piece pieceAtPosition = BoardManager.getPieceAtPosition(board, position);
+            boolean success = tryAddLegalMove(board, legalMoves, position, originatingPieceColor);
+
+            if (!success || (pieceAtPosition != null && pieceAtPosition.getColor() != originatingPieceColor))
+            {
+                result = new Position[legalMoves.size()];
+
+                for (j = 0; j < legalMoves.size(); j ++)
+                {
+                    result[j] = legalMoves.get(j);
+                }
+
+                return result;
+            }
+        }
+
+        return result;
     }
 
     /**

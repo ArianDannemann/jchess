@@ -11,19 +11,21 @@ public class Piece
     private PieceType type;
     private Color color;
 
-    public Piece (Position position, PieceType type, Color color)
+    private boolean hasMoved = false;
+
+    public Piece(Position position, PieceType type, Color color)
     {
         this.setPosition(position);
         this.type = type;
         this.color = color;
     }
 
-    public Position getPosition ()
+    public Position getPosition()
     {
         return this.position;
     }
 
-    public void setPosition (Position position)
+    public void setPosition(Position position)
     {
         // Check if the new position is in bounds
         if (position.getFile() < 0 || position.getFile() > 7
@@ -36,13 +38,23 @@ public class Piece
         }
     }
 
-    public PieceType getType ()
+    public PieceType getType()
     {
         return this.type;
     }
 
-    public Color getColor ()
+    public Color getColor()
     {
         return this.color;
+    }
+
+    public boolean getHasMoved()
+    {
+        return this.hasMoved;
+    }
+
+    public void setHasMoved(boolean hasMoved)
+    {
+        this.hasMoved = hasMoved;
     }
 }

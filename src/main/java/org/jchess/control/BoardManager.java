@@ -1,6 +1,7 @@
 package org.jchess.control;
 
 import org.jchess.exceptions.InvalidFENException;
+import org.jchess.exceptions.PieceNotFoundException;
 import org.jchess.model.Board;
 import org.jchess.model.Color;
 import org.jchess.model.Piece;
@@ -84,8 +85,12 @@ public class BoardManager
         Piece pieceToMove = piece;
         Piece pieceToAttack = BoardManager.getPieceAtPosition(board, newPosition);
 
-        if (pieceToMove == null
-            || !MoveManager.isMoveLegal(board, piece, newPosition)
+        if (piece == null)
+        {
+            throw new PieceNotFoundException();
+        }
+
+        if (!MoveManager.isMoveLegal(board, piece, newPosition)
             || pieceToMove.getColor() != board.getPlayingSideColor())
         {
             return false;
@@ -95,6 +100,7 @@ public class BoardManager
         if (pieceToAttack == null)
         {
             pieceToMove.setPosition(newPosition);
+            pieceToMove.setHasMoved(true);
 
             BoardManager.switchPlayingSideColor(board);
 
@@ -104,7 +110,9 @@ public class BoardManager
         else if (pieceToAttack.getColor() != pieceToMove.getColor())
         {
             BoardManager.removePiece(board, pieceToAttack);
+
             pieceToMove.setPosition(newPosition);
+            pieceToMove.setHasMoved(true);
 
             BoardManager.switchPlayingSideColor(board);
 

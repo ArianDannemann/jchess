@@ -17,7 +17,7 @@ public class UI
      * Prints the current position on a board to the console
      * @param board The board to be printed
      */
-    public static void printBoard (Board board)
+    public static void printBoard(Board board)
     {
         Piece[] pieces = board.getPieces();
         int file;
@@ -78,7 +78,7 @@ public class UI
      * @param board The board we want to print
      * @param targetPiece The piece of which the legal moves should be displayed
      */
-    public static void printBoardWithValidMoves (Board board, Piece targetPiece)
+    public static void printBoardWithValidMoves(Board board, Piece targetPiece)
     {
         Piece[] pieces = board.getPieces();
         Position[] targetPositions = MoveManager.getLegalMoves(board, targetPiece);
@@ -150,7 +150,7 @@ public class UI
      * @param piece The piece for which we want to get the abbreviation
      * @return The character representing the given piece type
      */
-    public static char getPieceAbbreviation (Piece piece)
+    public static char getPieceAbbreviation(Piece piece)
     {
         switch (piece.getType())
         {

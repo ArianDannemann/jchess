@@ -4,6 +4,7 @@ import org.jchess.exceptions.InvalidFENException;
 import org.jchess.exceptions.PieceNotFoundException;
 import org.jchess.model.Board;
 import org.jchess.model.Color;
+import org.jchess.model.Move;
 import org.jchess.model.Piece;
 import org.jchess.model.PieceType;
 import org.jchess.model.Position;
@@ -70,7 +71,13 @@ public class BoardManager
      */
     public static boolean movePiece(Board board, Position oldPosition, Position newPosition)
     {
-        return movePiece(board, BoardManager.getPieceAtPosition(board, oldPosition), newPosition);
+        return BoardManager.movePiece(board, BoardManager.getPieceAtPosition(board, oldPosition), newPosition);
+    }
+
+    public static boolean movePiece(Board board, String moveString)
+    {
+        Move move = MoveManager.getMoveFromString(board, moveString);
+        return BoardManager.movePiece(board, move.getPiece(), move.getPosition());
     }
 
     /**
@@ -227,7 +234,6 @@ public class BoardManager
 
         for (char pieceChar : pieceSetupString.toCharArray())
         {
-
             //int pieceValue = pieceChar;
             // 47: Slash
             if (pieceChar == 47)
@@ -235,10 +241,8 @@ public class BoardManager
                 continue;
             }
 
-            // 65 - 90: Uppercase letters
-            // 97 - 122: Lowercase letters
-            if ((pieceChar > 64 && pieceChar < 91)
-                || (pieceChar > 96 && pieceChar < 123))
+            // Check if the char is a letter which represents a piece
+            if (StringHelper.isCharLetter(pieceChar))
             {
                 Position position = new Position(file, rank);
                 PieceType type = BoardManager.getTypeFromAbbreviation(pieceChar);
@@ -252,8 +256,8 @@ public class BoardManager
 
                 BoardManager.addPiece(board, position, type, color);
             }
-            // 48 - 57: Numbers
-            else if (pieceChar > 47 && pieceChar < 58)
+            // Check if the character is a number which represents empty spaces
+            else if (StringHelper.isCharNumber(pieceChar))
             {
                 int freeSpaces = Integer.parseInt(pieceChar + "");
                 file += freeSpaces - 1;
@@ -279,6 +283,7 @@ public class BoardManager
      * @param abbreviation The character that represents the piece type
      * @return The piece type represented by the character
      */
+    // TODO: Move to StringHelper
     public static PieceType getTypeFromAbbreviation(char abbreviation)
     {
         switch (abbreviation)

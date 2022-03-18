@@ -25,19 +25,6 @@ public class Piece
         return this.position;
     }
 
-    public void setPosition(Position position)
-    {
-        // Check if the new position is in bounds
-        if (position.getFile() < 0 || position.getFile() > 7
-            || position.getRank() < 0 || position.getRank() > 7)
-        {
-            throw new PieceOutOfBoundsExceptions();
-        }
-        else {
-            this.position = position;
-        }
-    }
-
     public PieceType getType()
     {
         return this.type;
@@ -51,6 +38,19 @@ public class Piece
     public boolean getHasMoved()
     {
         return this.hasMoved;
+    }
+
+    public void setPosition(Position position)
+    {
+        // Check if the new position is in bounds
+        if (position.getFile() < 0 || position.getFile() > 7
+            || position.getRank() < 0 || position.getRank() > 7)
+        {
+            throw new PieceOutOfBoundsExceptions();
+        }
+        else {
+            this.position = position;
+        }
     }
 
     public void setHasMoved(boolean hasMoved)

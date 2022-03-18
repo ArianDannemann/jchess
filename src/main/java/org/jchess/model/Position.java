@@ -8,6 +8,12 @@ public class Position
     private int file;
     private int rank;
 
+    public Position()
+    {
+        this.file = -1;
+        this.rank = -1;
+    }
+
     public Position(Position origin, int fileOffset, int rankOffset)
     {
         this.file = origin.getFile() + fileOffset;
@@ -23,8 +29,8 @@ public class Position
     public Position(String position)
     {
         char[] positionChars = position.toCharArray();
-        this.file = this.getFileFromChar(positionChars[0]);
-        this.rank = this.getRankFromChar(positionChars[1]);
+        this.file = Position.getFileFromChar(positionChars[0]);
+        this.rank = Position.getRankFromChar(positionChars[1]);
     }
 
     public static boolean equals (Position a, Position b)
@@ -53,12 +59,12 @@ public class Position
         return (char) (49 + this.getRank());
     }
 
-    public int getFileFromChar(char fileChar)
+    public static int getFileFromChar(char fileChar)
     {
         return fileChar - 97;
     }
 
-    public int getRankFromChar(char rankChar)
+    public static int getRankFromChar(char rankChar)
     {
         return rankChar - 49;
     }

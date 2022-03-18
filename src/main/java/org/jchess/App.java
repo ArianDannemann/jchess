@@ -1,5 +1,7 @@
 package org.jchess;
 
+import java.util.Scanner;
+
 import org.jchess.control.BoardManager;
 import org.jchess.model.Board;
 import org.jchess.model.Position;
@@ -15,11 +17,20 @@ public class App
 {
     public static void main(String[] args)
     {
-        Board board = BoardManager.generateBoard("rk2k1kr/8/8/8/8/8/8/8 w - - 0 1");
-
-        //BoardManager.movePiece(board, new Position("a1"), new Position("a5"));
+        Board board = BoardManager.generateBoard("r1bqkbnr/pp1p1ppp/2n1p3/2p5/3PP3/2N5/PPP1NPPP/R1BQKB1R b KQkq - 0 4");
+        Scanner scanner = new Scanner(System.in);
 
         UI.printBoard(board);
-        UI.printBoardWithValidMoves(board, BoardManager.getPieceAtPosition(board, new Position("e8")));
+
+        while (true)
+        {
+            String input;
+
+            System.out.print("Your input: ");
+            input = scanner.nextLine();
+
+            BoardManager.movePiece(board, input);
+            UI.printBoard(board);
+        }
     }
 }

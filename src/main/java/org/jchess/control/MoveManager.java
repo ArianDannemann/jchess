@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import org.jchess.exceptions.PieceNotFoundException;
 import org.jchess.model.Board;
 import org.jchess.model.Color;
+import org.jchess.model.FileRankHintType;
+import org.jchess.model.Move;
 import org.jchess.model.Piece;
 import org.jchess.model.PieceType;
 import org.jchess.model.Position;
@@ -15,7 +17,8 @@ import org.jchess.model.Position;
 public class MoveManager
 {
     // TODO: Add support for special moves like:
-    // castling, promoting, en-passant
+    // promoting, en-passant
+    // TODO: Add support for checks
 
     /**
      * Checks if a move is considere legal according to chess ruels
@@ -192,6 +195,97 @@ public class MoveManager
         }
 
         return result;
+    }
+
+    // TODO: Add support for castling and promotion
+    public static Move getMoveFromString(Board board, String moveString)
+    {
+        Move move = new Move();
+        Piece movingPiece = null;
+        PieceType movingPieceType = PieceType.PAWN; // the type of the piece we want to move
+        Position positionToMoveTo; // the position we want to move to
+        Position movingPiecePosition = new Position(); // the position of the moving piece (if specified)
+        // If the position of the moving piece wasn't specified fully, we get a hint at either file or rank
+        FileRankHintType fileRankHint = FileRankHintType.NONE;
+
+        // Remove any character that isn't giving us necessary information
+        moveString = moveString.replace("x", "");
+        moveString = moveString.replace("+", "");
+        moveString = moveString.replace("#", "");
+
+        char[] moveStringChars = moveString.toCharArray();
+
+        // Figure out the type of piece to move
+        for (char moveStringChar : moveStringChars)
+        {
+            // If the char is uppercase...
+            if (StringHelper.isCharUppercaseLetter(moveStringChar))
+            {
+                movingPieceType = BoardManager.getTypeFromAbbreviation(moveStringChar);
+            }
+        }
+
+        // If the piece is not a pawn...
+        if (movingPieceType != PieceType.PAWN)
+        {
+            // Remove the first element of our string because we already extruded that information
+            moveString = moveString.substring(1, moveStringChars.length);
+            moveStringChars = moveString.toCharArray();
+        }
+
+        // The position will always be the last to characters in the string
+        positionToMoveTo = new Position(moveStringChars[moveStringChars.length - 2] + "" + moveStringChars[moveStringChars.length - 1]);
+
+        // Remove the position information of our string because we already extruded that information
+        moveString = moveString.substring(0, moveStringChars.length - 2);
+        moveStringChars = moveString.toCharArray();
+
+        // If there is only part of the position of our moving piece given...
+        if (moveStringChars.length == 1)
+        {
+            char positionHintChar = moveStringChars[0];
+
+            // ...figure out which part
+            fileRankHint = StringHelper.isCharLetter(positionHintChar) ? FileRankHintType.FILE : FileRankHintType.RANK;
+
+            // Set the information of the position that we know
+            if (fileRankHint == FileRankHintType.FILE)
+            {
+                movingPiecePosition.setFile(Position.getFileFromChar(positionHintChar));
+            }
+            else
+            {
+                movingPiecePosition.setRank(Position.getRankFromChar(positionHintChar));
+            }
+        }
+        // If the position of our moving piece is given...
+        else if (moveStringChars.length == 2)
+        {
+            // ...save the position
+            movingPiecePosition = new Position(moveStringChars[0] + "" + moveStringChars[1]);
+        }
+
+        // Loop through all of the pieces...
+        for (Piece piece : board.getPieces())
+        {
+            // Check if the piece meets all criteria set by the move string
+            if (piece.getColor() == board.getPlayingSideColor()
+                && piece.getType() == movingPieceType
+                && MoveManager.isMoveLegal(board, piece, positionToMoveTo)
+                && ((movingPiecePosition.getFile() == -1 && movingPiecePosition.getRank() == -1)
+                    || (movingPiecePosition.getFile() != -1 && movingPiecePosition.getRank() == -1 && piece.getPosition().getFile() == movingPiecePosition.getFile())
+                    || (movingPiecePosition.getFile() == -1 && movingPiecePosition.getRank() != -1 && piece.getPosition().getRank() == movingPiecePosition.getRank())
+                    || (movingPiecePosition.getFile() != -1 && movingPiecePosition.getRank() != -1 && piece.getPosition() == movingPiecePosition)))
+            {
+                movingPiece = piece;
+            }
+        }
+
+        // Save the values to the move
+        move.setPiece(movingPiece);
+        move.setPosition(positionToMoveTo);
+
+        return move;
     }
 
     /**

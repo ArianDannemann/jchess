@@ -20,7 +20,5 @@ public class App
         BoardManager.movePiece(board, new Position("e2"), new Position("e4"));
 
         UI.printBoard(board);
-        System.out.println("Playing side: " + board.getPlayingSideColor().toString());
-        System.out.println("Position of king: " + new Position(4, 0));
     }
 }

@@ -13,11 +13,14 @@ import org.jchess.view.UI;
  */
 public class App
 {
-    public static void main (String[] args)
+    public static void main(String[] args)
     {
         Board board = BoardManager.generateBoard();
-        BoardManager.movePiece(board, new Position(0, 6), new Position(0, 4));
+
+        BoardManager.movePiece(board, new Position("e2"), new Position("e4"));
+
         UI.printBoard(board);
         System.out.println("Playing side: " + board.getPlayingSideColor().toString());
+        System.out.println("Position of king: " + new Position(4, 0));
     }
 }

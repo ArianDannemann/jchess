@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.jchess.exceptions.PieceNotFoundException;
 import org.jchess.model.Board;
+import org.jchess.model.CastlingStatus;
 import org.jchess.model.Color;
 import org.jchess.model.FileRankHintType;
 import org.jchess.model.Move;
@@ -100,7 +101,16 @@ public class MoveManager
                     && leftMostPiece.getType() == PieceType.ROOK
                     && !leftMostPiece.getHasMoved())
                 {
-                    legalMoves.add(new Position(piece.getPosition(), -2, 0));
+                    // Check if the side can actually castle
+                    if ((board.getPlayingSideColor() == Color.WHITE
+                        && (board.getWhiteCastlingStatus() == CastlingStatus.QUEENSIDE
+                            || board.getWhiteCastlingStatus() == CastlingStatus.KINGANDQUEENSIDE))
+                        || (board.getPlayingSideColor() == Color.BLACK
+                            && (board.getBlackCastlingStatus() == CastlingStatus.QUEENSIDE
+                                || board.getBlackCastlingStatus() == CastlingStatus.KINGANDQUEENSIDE)))
+                    {
+                        legalMoves.add(new Position(piece.getPosition(), -2, 0));
+                    }
                 }
 
                 if (lineMovesRight.length == 2
@@ -108,7 +118,15 @@ public class MoveManager
                     && rightMostPiece.getType() == PieceType.ROOK
                     && !rightMostPiece.getHasMoved())
                 {
-                    legalMoves.add(new Position(piece.getPosition(), 2, 0));
+                    if ((board.getPlayingSideColor() == Color.WHITE
+                        && (board.getWhiteCastlingStatus() == CastlingStatus.KINGSIDE
+                            || board.getWhiteCastlingStatus() == CastlingStatus.KINGANDQUEENSIDE))
+                        || (board.getPlayingSideColor() == Color.BLACK
+                            && (board.getBlackCastlingStatus() == CastlingStatus.KINGSIDE
+                                || board.getBlackCastlingStatus() == CastlingStatus.KINGANDQUEENSIDE)))
+                    {
+                        legalMoves.add(new Position(piece.getPosition(), 2, 0));
+                    }
                 }
 
                 break;
@@ -212,6 +230,21 @@ public class MoveManager
         moveString = moveString.replace("x", "");
         moveString = moveString.replace("+", "");
         moveString = moveString.replace("#", "");
+
+        // Check if the move is a castling move
+        if (moveString.equals("O-O") || moveString.equals("O-O-O"))
+        {
+            movingPiece = BoardManager.getPieceAtPosition(board, board.getPlayingSideColor() == Color.WHITE ? new Position("e1") : new Position("e8"));
+            movingPiecePosition = moveString.equals("O-O") ? new Position(movingPiece.getPosition(), 2, 0) : new Position(movingPiece.getPosition(), -2, 0);
+
+            if (isMoveLegal(board, movingPiece, movingPiecePosition))
+            {
+                move.setPiece(movingPiece);
+                move.setPosition(movingPiecePosition);
+
+                return move;
+            }
+        }
 
         char[] moveStringChars = moveString.toCharArray();
 

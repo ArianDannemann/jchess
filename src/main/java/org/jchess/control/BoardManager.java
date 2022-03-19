@@ -3,6 +3,7 @@ package org.jchess.control;
 import org.jchess.exceptions.InvalidFENException;
 import org.jchess.exceptions.PieceNotFoundException;
 import org.jchess.model.Board;
+import org.jchess.model.CastlingStatus;
 import org.jchess.model.Color;
 import org.jchess.model.Move;
 import org.jchess.model.Piece;
@@ -31,12 +32,11 @@ public class BoardManager
     public static Board generateBoard(String FEN)
     {
         Board board = new Board();
+        String[] FENparts = FEN.split(" ");
 
-        // NOTE: Would be nicer if FEN was split into string array, and only applicable string was passed to methods
-
-        BoardManager.addPiecesFromFEN(board, FEN);
-        // NOTE: Would be nicer if there was a method like setPlayingSideFromFEN
-        board.setPlayingSideColor(BoardManager.getPlayingSideFromFEN(FEN));
+        BoardManager.addPiecesFromFEN(board, FENparts[0]);
+        BoardManager.setPlayingSideFromFEN(board, FENparts[1]);
+        BoardManager.setCastlingStatusesFromFEN(board, FENparts[2]);
 
         return board;
     }
@@ -51,16 +51,18 @@ public class BoardManager
         Piece[] pieces = board.getPieces();
         Board copiedBoard = new Board();
 
+        copiedBoard.setPlayingSideColor(board.getPlayingSideColor());
+        copiedBoard.setCastlingStatuses(board.getCastlingStatuses());
+
         for (Piece piece : pieces)
         {
             Piece copiedPiece = new Piece(piece.getPosition(), piece.getType(), piece.getColor());
             BoardManager.addPiece(copiedBoard, copiedPiece);
+            copiedPiece.setHasMoved(piece.getHasMoved());
         }
 
         return copiedBoard;
     }
-
-    // TODO: Add support for standard chess notation input (i.e. Ke5...)
 
     /**
      * Moves a piece from <i>oldPosition</i> to <i>newPosition</i>
@@ -103,33 +105,32 @@ public class BoardManager
             return false;
         }
 
-        // If there is no piece at the target position...
-        if (pieceToAttack == null)
-        {
-            pieceToMove.setPosition(newPosition);
-            pieceToMove.setHasMoved(true);
-
-            BoardManager.switchPlayingSideColor(board);
-
-            return true;
-        }
-        // If there is an enemy piece at the target position...
-        else if (pieceToAttack.getColor() != pieceToMove.getColor())
-        {
-            BoardManager.removePiece(board, pieceToAttack);
-
-            pieceToMove.setPosition(newPosition);
-            pieceToMove.setHasMoved(true);
-
-            BoardManager.switchPlayingSideColor(board);
-
-            return true;
-        }
-        // If there is a friendly piece at the target position...
-        else
+        if (pieceToAttack != null && pieceToAttack.getColor() == pieceToMove.getColor())
         {
             return false;
         }
+
+        if (pieceToAttack != null)
+        {
+            BoardManager.removePiece(board, pieceToAttack);
+        }
+
+        // If the move is a castling move...
+        if (pieceToMove.getType() == PieceType.KING
+            && (newPosition.getFile() > pieceToMove.getPosition().getFile() + 1
+            || newPosition.getFile() < pieceToMove.getPosition().getFile() - 1))
+        {
+            // ...also move the rook
+            BoardManager.getPieceAtPosition(board, new Position(pieceToMove.getPosition(), newPosition.getFile() > 5 ? 3 : -4, 0)).setPosition(new Position(pieceToMove.getPosition(), newPosition.getFile() > 5 ? 1 : -1, 0));
+        }
+
+        pieceToMove.setPosition(newPosition);
+        pieceToMove.setHasMoved(true);
+
+        BoardManager.switchPlayingSideColor(board);
+
+        return true;
+
     }
 
     public static void switchPlayingSideColor(Board board)
@@ -340,10 +341,32 @@ public class BoardManager
         return null;
     }
 
-    public static Color getPlayingSideFromFEN(String FEN)
+    public static void setPlayingSideFromFEN(Board board, String FENPart)
     {
-        char playingSideString = FEN.split(" ")[1].toCharArray()[0];
+        board.setPlayingSideColor(FENPart.toCharArray()[0] == 'w' ? Color.WHITE : Color.BLACK);
+    }
 
-        return playingSideString == 'w' ? Color.WHITE : Color.BLACK;
+    public static void setCastlingStatusesFromFEN(Board board, String FENPart)
+    {
+        board.setWhiteCastlingStatus(CastlingStatus.NONE);
+        board.setBlackCastlingStatus(CastlingStatus.NONE);
+
+        if (FENPart.contains("K"))
+        {
+            board.setWhiteCastlingStatus(CastlingStatus.KINGSIDE);
+        }
+        if (FENPart.contains("Q"))
+        {
+            board.setWhiteCastlingStatus(FENPart.contains("K") ? CastlingStatus.KINGANDQUEENSIDE : CastlingStatus.QUEENSIDE);
+        }
+
+        if (FENPart.contains("k"))
+        {
+            board.setBlackCastlingStatus(CastlingStatus.KINGSIDE);
+        }
+        if (FENPart.contains("q"))
+        {
+            board.setWhiteCastlingStatus(FENPart.contains("K") ? CastlingStatus.KINGANDQUEENSIDE : CastlingStatus.QUEENSIDE);
+        }
     }
 }

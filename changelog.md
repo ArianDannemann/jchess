@@ -3,14 +3,14 @@
 ## NEXT: Version 0.3
 
 Plans:
-* Input moves according to standard chess notation
 * Add support for special moves
 * Give the user the option to enter next moves via keyboard
 
 Notes:
 * Added support for playing side color
 * Positions can now be entered in chess notation, i.e. e4, d7, ...
-* Added support for castling
+* Added support for castling (NOTE: finish)
+* Input moves according to standard chess notation (NOTE: finish special moves)
 
 ## Version 0.2
 

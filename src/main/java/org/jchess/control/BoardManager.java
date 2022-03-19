@@ -157,6 +157,8 @@ public class BoardManager
 
     public static boolean isSideInCheck(Board board, Color color)
     {
+        BoardManager.updateCheckedPiecesStatus(board);
+
         for (Piece piece : board.getPieces())
         {
             if (piece.getType() == PieceType.KING

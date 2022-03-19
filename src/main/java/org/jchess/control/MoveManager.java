@@ -96,7 +96,8 @@ public class MoveManager
                 Piece leftMostPiece = BoardManager.getPieceAtPosition(board, new Position(piece.getPosition(), -4, 0));
                 Piece rightMostPiece = BoardManager.getPieceAtPosition(board, new Position(piece.getPosition(), 3, 0));
 
-                if (lineMovesLeft.length == 3
+                if (lineMovesLeft != null
+                    && lineMovesLeft.length == 3
                     && leftMostPiece != null
                     && leftMostPiece.getType() == PieceType.ROOK
                     && !leftMostPiece.getHasMoved())
@@ -113,7 +114,8 @@ public class MoveManager
                     }
                 }
 
-                if (lineMovesRight.length == 2
+                if (lineMovesRight != null
+                    && lineMovesRight.length == 2
                     && rightMostPiece != null
                     && rightMostPiece.getType() == PieceType.ROOK
                     && !rightMostPiece.getHasMoved())

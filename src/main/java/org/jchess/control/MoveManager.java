@@ -215,7 +215,7 @@ public class MoveManager
         return result;
     }
 
-    // TODO: Add support for castling and promotion
+    // TODO: Add support for promotion
     public static Move getMoveFromString(Board board, String moveString)
     {
         Move move = new Move();

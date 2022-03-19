@@ -23,7 +23,7 @@ public class App
 
     public static void startGame()
     {
-        Board board = BoardManager.generateBoard("8/8/8/8/8/8/8/R3K2R w - - 0 1");
+        Board board = BoardManager.generateBoard();
         Scanner scanner = new Scanner(System.in);
 
         UI.printBoard(board);

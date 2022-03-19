@@ -12,12 +12,23 @@ public class Piece
     private Color color;
 
     private boolean hasMoved = false;
+    private boolean isInCheck = false;
 
     public Piece(Position position, PieceType type, Color color)
     {
         this.setPosition(position);
         this.type = type;
         this.color = color;
+    }
+
+    public boolean getIsInCheck()
+    {
+        return isInCheck;
+    }
+
+    public void setIsInCheck(boolean isInCheck)
+    {
+        this.isInCheck = isInCheck;
     }
 
     public Position getPosition()

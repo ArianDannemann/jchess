@@ -59,6 +59,7 @@ public class BoardManager
             Piece copiedPiece = new Piece(piece.getPosition(), piece.getType(), piece.getColor());
             BoardManager.addPiece(copiedBoard, copiedPiece);
             copiedPiece.setHasMoved(piece.getHasMoved());
+            copiedPiece.setIsInCheck(piece.getIsInCheck());
         }
 
         return copiedBoard;
@@ -128,9 +129,44 @@ public class BoardManager
         pieceToMove.setHasMoved(true);
 
         BoardManager.switchPlayingSideColor(board);
+        BoardManager.updateCheckedPiecesStatus(board);
 
         return true;
+    }
 
+    public static void updateCheckedPiecesStatus(Board board)
+    {
+        for (Piece piece : board.getPieces())
+        {
+            if (piece.getType() != PieceType.KING)
+            {
+                continue;
+            }
+
+            piece.setIsInCheck(false);
+
+            for (Piece otherPiece : board.getPieces())
+            {
+                if (MoveManager.isMoveLegal(board, otherPiece, piece.getPosition()))
+                {
+                    piece.setIsInCheck(true);
+                }
+            }
+        }
+    }
+
+    public static boolean isSideInCheck(Board board, Color color)
+    {
+        for (Piece piece : board.getPieces())
+        {
+            if (piece.getType() == PieceType.KING
+                && piece.getColor() == color)
+            {
+                return piece.getIsInCheck();
+            }
+        }
+
+        return false;
     }
 
     public static void switchPlayingSideColor(Board board)

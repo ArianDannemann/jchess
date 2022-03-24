@@ -19,7 +19,6 @@ public class MoveManager
 {
     // TODO: Add support for special moves like:
     // promoting, en-passant
-    // TODO: Add support for checks
 
     /**
      * Checks if a move is considere legal according to chess ruels

@@ -5,13 +5,22 @@ import org.jchess.model.Board;
 import org.jchess.model.Color;
 import org.jchess.model.Piece;
 import org.jchess.model.Position;
+import org.jchess.model.Strings;
 
 /**
  * This is a utility class for displaying information to the user
  */
 public class UI
 {
-    // TODO: Add option for user input
+    public static void print(String msg)
+    {
+        System.out.print(Strings.APP_PREFIX + msg);
+    }
+
+    public static void println(String msg)
+    {
+        UI.print(msg + "\n");
+    }
 
     /**
      * Prints the current position on a board to the console

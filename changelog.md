@@ -10,6 +10,7 @@ Notes:
 * Added support for playing side color
 * Positions can now be entered in chess notation, i.e. e4, d7, ...
 * Added support for castling
+* Added checks
 * Input moves according to standard chess notation (NOTE: finish special moves)
 
 ## Version 0.2

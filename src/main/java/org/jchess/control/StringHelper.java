@@ -2,6 +2,9 @@ package org.jchess.control;
 
 import org.jchess.model.PieceType;
 
+/**
+ * A class to help with different string operations
+ */
 public class StringHelper
 {
     public static boolean isCharUppercaseLetter(char ch)

@@ -1,19 +1,29 @@
 package org.jchess.model;
 
+/**
+ * Represents a possible move that could be played
+ */
 public class Move
 {
     private Piece piece;
     private Position position;
 
-    private boolean isEnPassant = false;
-    private Position enPassantPosition;
-
+    /**
+     * Create an empty theoretical move
+     * NOTE: These are not being played by themself, this class is only to contain information
+     */
     public Move()
     {
         this.setPiece(null);
         this.setPosition(null);
     }
 
+    /**
+     * Create a theoretical move
+     * NOTE: These are not being played by themself, this class is only to contain information
+     * @param piece The piece that should move
+     * @param position The position the piece should move to
+     */
     public Move(Piece piece, Position position)
     {
         this.setPiece(piece);
@@ -30,16 +40,6 @@ public class Move
         return piece;
     }
 
-    public boolean getIsEnPassant()
-    {
-        return isEnPassant;
-    }
-
-    public Position getEnPassantPosition()
-    {
-        return enPassantPosition;
-    }
-
     public void setPosition(Position position)
     {
         this.position = position;
@@ -48,15 +48,5 @@ public class Move
     public void setPiece(Piece piece)
     {
         this.piece = piece;
-    }
-
-    public void setIsEnPassant(boolean isEnPassant)
-    {
-        this.isEnPassant = isEnPassant;
-    }
-
-    public void setEnPassantPosition(Position enPassantPosition)
-    {
-        this.enPassantPosition = enPassantPosition;
     }
 }

@@ -11,6 +11,8 @@ You can view a list of the most recent changes here [here](https://github.com/Ar
 
 ## Getting started
 
+### Setting up the library
+
 All you need to do in order to start using JChess is to download the latest build either from the git repo or directly via this link [here](https://github.com/ArianDannemann/jchess/blob/master/builds/jchess-0.3.jar).
 
 After that you can create a chess board in your java application by creating a new instance of the `Board` class like this:
@@ -38,4 +40,62 @@ To move pieces around, you can simply enter standard chess notated moves like th
 
 ```
 BoardManager.movePiece(Board board, new Position("e4"));
+```
+
+### Setting up a game
+
+If you want to play an entire game, you can take a look at the `GameManager` class.
+In there you will find a simple example to start a game and let the user input moves for both sides.
+
+First it initializes a game by generating a board in the default position:
+
+```
+/**
+ * Initializes our game
+ */
+public static void startGame()
+{
+    UI.println("Starting game...");
+    board = BoardManager.generateBoard();
+    gameLoop();
+}
+```
+
+Then, you can simply get the user input repeatidly an let the `BoardManager` move the pieces for you:
+
+```
+/**
+ * The core game loop
+ */
+private static void gameLoop()
+{
+    try (Scanner scanner = new Scanner(System.in))
+    {
+        // Print the current state of the board
+        UI.printBoard(board);
+
+        while (true)
+        {
+            String input;
+
+            // Get the user input
+            UI.print("Your input: ");
+            input = scanner.nextLine();
+
+            // Try to move a piece according to the user input
+            try
+            {
+                BoardManager.movePiece(board, input);
+            }
+            catch (PieceNotFoundException exception)
+            {
+                UI.println("There is no piece at the specified position!");
+                continue;
+            }
+
+            // Show the new position of the board
+            UI.printBoard(board);
+        }
+    }
+}
 ```

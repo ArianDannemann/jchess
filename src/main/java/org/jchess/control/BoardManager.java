@@ -16,10 +16,6 @@ import org.jchess.model.Position;
 public class BoardManager
 {
     /**
-     * TODO: Game end condition
-     */
-
-    /**
      * Generates a board with the standard chess position
      * @return A default chess board
      */
@@ -83,6 +79,12 @@ public class BoardManager
         return BoardManager.movePiece(board, BoardManager.getPieceAtPosition(board, oldPosition), newPosition);
     }
 
+    /**
+     * Moves a piece according to standard chess notation taken from <i>moveString</i>
+     * @param board The board that the piece is on
+     * @param moveString The current position of the piece
+     * @return <i>true</i> if the piece was moved, <i>false</i> if the piece could not be moved. This may be the case if the move is considered illegal according to chess rules
+     */
     public static boolean movePiece(Board board, String moveString)
     {
         Move move = MoveManager.getMoveFromString(board, moveString);
@@ -140,6 +142,8 @@ public class BoardManager
             board.setEnPassantPosition(board.getPlayingSideColor() == Color.WHITE ? new Position(newPosition, 0, -1) : new Position(newPosition, 0, 1));
         }
 
+        // FIXME: en passant position never gets removed, should not be a problem is most cases
+
         // If an en passant position is attacked, remove the pawn that is standing above or below
         if (Position.equals(newPosition, board.getEnPassanPosition()))
         {
@@ -155,6 +159,10 @@ public class BoardManager
         return true;
     }
 
+    /**
+     * Updates the board to check if one of the kings is in check
+     * @param board The board that should be updated
+     */
     public static void updateCheckedPiecesStatus(Board board)
     {
         for (Piece piece : board.getPieces())
@@ -176,6 +184,12 @@ public class BoardManager
         }
     }
 
+    /**
+     * Checks whether the king of a side on a board is in check or not
+     * @param board The board that the king is on
+     * @param color The color of the side we want to check
+     * @return <i>true</i> if the king is in check, <i>false</i> if the king is not in check
+     */
     public static boolean isSideInCheck(Board board, Color color)
     {
         BoardManager.updateCheckedPiecesStatus(board);
@@ -192,6 +206,10 @@ public class BoardManager
         return false;
     }
 
+    /**
+     * Switches the color of the side that is currently playing
+     * @param board The board we want to switch the color on
+     */
     public static void switchPlayingSideColor(Board board)
     {
         board.setPlayingSideColor(board.getPlayingSideColor() == Color.WHITE ? Color.BLACK : Color.WHITE);
@@ -241,6 +259,12 @@ public class BoardManager
         return true;
     }
 
+    /**
+     * Removes the piece standing at <i>position</i> from a board
+     * @param board The board the piece is standing on
+     * @param position The position the piece is at
+     * @return <i>true</i> if the piece was removed, <i>false</i> if the piece could not be removed. This may be because there is no piece at the specified location
+     */
     public static boolean removePiece(Board board, Position position)
     {
         return removePiece(board, BoardManager.getPieceAtPosition(board, position));
@@ -283,16 +307,14 @@ public class BoardManager
 
     /**
      * Generates a list of pieces from the standard FEN notation
-     * @param FEN The FEN string of the chess position
-     * @return A list of pieces, placed according to the FEN string. May contain <i>null</i> elements
+     * @param FENPart The part of the FEN string that shows the piece position
      */
-    public static void addPiecesFromFEN(Board board, String FEN)
+    public static void addPiecesFromFEN(Board board, String FENPart)
     {
-        String pieceSetupString = FEN.split(" ")[0];
         int file = 0;
         int rank = 7;
 
-        for (char pieceChar : pieceSetupString.toCharArray())
+        for (char pieceChar : FENPart.toCharArray())
         {
             //int pieceValue = pieceChar;
             // 47: Slash
@@ -361,11 +383,21 @@ public class BoardManager
         return null;
     }
 
+    /**
+     * Gets the currently playing side from a given part of the FEN string and writes the information to <i>board</i>
+     * @param board The board we want to write the information to
+     * @param FENPart The part of the FEN responsible for indicating the currently playing side
+     */
     public static void setPlayingSideFromFEN(Board board, String FENPart)
     {
         board.setPlayingSideColor(FENPart.toCharArray()[0] == 'w' ? Color.WHITE : Color.BLACK);
     }
 
+    /**
+     * Gets the current castling status from a given part of the FEN string and writes the information to <i>board</i>
+     * @param board The board we want to write the information to
+     * @param FENPart The part of the FEN responsible for indicating the castling status of both sides
+     */
     public static void setCastlingStatusesFromFEN(Board board, String FENPart)
     {
         board.setWhiteCastlingStatus(CastlingStatus.NONE);
@@ -390,6 +422,11 @@ public class BoardManager
         }
     }
 
+    /**
+     * Gets the en passant status from a given part of the FEN string and writes the information to <i>board</i>
+     * @param board The board we want to write the information to
+     * @param FENPart The part of the FEN responsible for indicating the en passant position
+     */
     public static void setEnPassantPositionFromFend(Board board, String FENPart)
     {
         if (!FENPart.equals("-"))

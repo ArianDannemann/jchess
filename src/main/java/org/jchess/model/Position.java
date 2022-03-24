@@ -8,6 +8,9 @@ public class Position
     private int file;
     private int rank;
 
+    /**
+     * Create an empty position
+     */
     public Position()
     {
         this.file = -1;
@@ -20,12 +23,21 @@ public class Position
         this.rank = origin.getRank() + rankOffset;
     }
 
+    /**
+     * Create a new position by specifying coordinates
+     * @param file The x coordinate starting at 0
+     * @param rank The y coordinate starting at 0
+     */
     public Position(int file, int rank)
     {
         this.file = file;
         this.rank = rank;
     }
 
+    /**
+     * Create an ew position by specifying its position in standard chess notation
+     * @param position The position string, i.e. "e4", "g8", ...
+     */
     public Position(String position)
     {
         char[] positionChars = position.toCharArray();
@@ -33,8 +45,15 @@ public class Position
         this.rank = Position.getRankFromChar(positionChars[1]);
     }
 
+    /**
+     * Compares two positions to see if they are equal
+     * @param a The first position
+     * @param b The second position
+     * @return a == b
+     */
     public static boolean equals (Position a, Position b)
     {
+        if (a == null || b == null) { return false; }
         return a.getFile() == b.getFile() && a.getRank() == b.getRank();
     }
 

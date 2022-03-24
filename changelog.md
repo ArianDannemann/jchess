@@ -1,6 +1,6 @@
 # JChess Changelog
 
-## NEXT: Version 0.3
+## Version 0.3
 
 Notes:
 * Added support for playing taking turns

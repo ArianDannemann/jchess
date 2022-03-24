@@ -7,13 +7,19 @@ import org.jchess.exceptions.PieceOutOfBoundsExceptions;
  */
 public class Piece
 {
-    private Position position;
-    private PieceType type;
-    private Color color;
+    private Position position; // the position of the piece
+    private PieceType type; // the type of the piece
+    private Color color; // the color of the piece
 
-    private boolean hasMoved = false;
-    private boolean isInCheck = false;
+    private boolean hasMoved = false; // has the piece moved atleast once?
+    private boolean isInCheck = false; // is the piece currently in check? (only set for kings)
 
+    /**
+     * Create a new chess piece
+     * @param position The position of the piece
+     * @param type The type of the piece
+     * @param color The color of the piece
+     */
     public Piece(Position position, PieceType type, Color color)
     {
         this.setPosition(position);

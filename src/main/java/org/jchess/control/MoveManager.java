@@ -215,6 +215,12 @@ public class MoveManager
         return result;
     }
 
+    /**
+     * Figures out what piece is supposed to move to what position from a given string that follows standard chess notation
+     * @param board The board the piece is on
+     * @param moveString The input string
+     * @return A <i>Move</i> object that contains the piece that should move and the position it should move to
+     */
     public static Move getMoveFromString(Board board, String moveString)
     {
         Move move = new Move();
@@ -369,6 +375,9 @@ public class MoveManager
         }
     }
 
+    /**
+     * Similar to {@link #tryAddLegalMoveLine(Board, ArrayList, Position, Position, Color)} but doesn't add the result to a list of moves but instead returns it as an array
+     */
     private static Position[] castRayLine(Board board, Position origin, Position direction, Color originatingPieceColor)
     {
         ArrayList<Position> legalMoves = new ArrayList<>();

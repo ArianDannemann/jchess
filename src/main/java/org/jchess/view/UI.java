@@ -5,17 +5,28 @@ import org.jchess.model.Board;
 import org.jchess.model.Color;
 import org.jchess.model.Piece;
 import org.jchess.model.Position;
+import org.jchess.model.Strings;
 
 /**
  * This is a utility class for displaying information to the user
  */
 public class UI
 {
+    public static void print(String msg)
+    {
+        System.out.print(Strings.APP_PREFIX + msg);
+    }
+
+    public static void println(String msg)
+    {
+        UI.print(msg + "\n");
+    }
+
     /**
      * Prints the current position on a board to the console
      * @param board The board to be printed
      */
-    public static void printBoard (Board board)
+    public static void printBoard(Board board)
     {
         Piece[] pieces = board.getPieces();
         int file;
@@ -25,6 +36,8 @@ public class UI
 
         for (rank = 7; rank > -1; rank --)
         {
+            System.out.print(" " + (rank + 1) + " ");
+
             for (file = 0; file < 8; file ++)
             {
                 boolean pieceFound = false;
@@ -60,8 +73,13 @@ public class UI
         }
 
         System.out.println(' ');
+        System.out.println("    a b c d e f g h");
+        System.out.println(' ');
 
         System.out.println("Piece count: " + board.getPieces().length);
+        System.out.println("Playing side: " + board.getPlayingSideColor().toString());
+
+        System.out.println(" ");
     }
 
     /**
@@ -69,7 +87,7 @@ public class UI
      * @param board The board we want to print
      * @param targetPiece The piece of which the legal moves should be displayed
      */
-    public static void printBoardWithValidMoves (Board board, Piece targetPiece)
+    public static void printBoardWithValidMoves(Board board, Piece targetPiece)
     {
         Piece[] pieces = board.getPieces();
         Position[] targetPositions = MoveManager.getLegalMoves(board, targetPiece);
@@ -141,7 +159,7 @@ public class UI
      * @param piece The piece for which we want to get the abbreviation
      * @return The character representing the given piece type
      */
-    public static char getPieceAbbreviation (Piece piece)
+    public static char getPieceAbbreviation(Piece piece)
     {
         switch (piece.getType())
         {

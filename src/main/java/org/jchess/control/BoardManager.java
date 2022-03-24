@@ -1,8 +1,11 @@
 package org.jchess.control;
 
 import org.jchess.exceptions.InvalidFENException;
+import org.jchess.exceptions.PieceNotFoundException;
 import org.jchess.model.Board;
+import org.jchess.model.CastlingStatus;
 import org.jchess.model.Color;
+import org.jchess.model.Move;
 import org.jchess.model.Piece;
 import org.jchess.model.PieceType;
 import org.jchess.model.Position;
@@ -16,7 +19,7 @@ public class BoardManager
      * Generates a board with the standard chess position
      * @return A default chess board
      */
-    public static Board generateBoard ()
+    public static Board generateBoard()
     {
         return generateBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     }
@@ -26,10 +29,15 @@ public class BoardManager
      * @param FEN The standard FEN notation for a chess position
      * @return A board with placed pieces
      */
-    public static Board generateBoard (String FEN)
+    public static Board generateBoard(String FEN)
     {
         Board board = new Board();
-        BoardManager.addPiecesFromFEN(board, FEN);
+        String[] FENParts = FEN.split(" ");
+
+        BoardManager.addPiecesFromFEN(board, FENParts[0]);
+        BoardManager.setPlayingSideFromFEN(board, FENParts[1]);
+        BoardManager.setCastlingStatusesFromFEN(board, FENParts[2]);
+        BoardManager.setEnPassantPositionFromFend(board, FENParts[3]);
 
         return board;
     }
@@ -39,15 +47,21 @@ public class BoardManager
      * @param board The board we want to copy
      * @return An independent copy of the given board
      */
-    public static Board copyBoard (Board board)
+    public static Board copyBoard(Board board)
     {
         Piece[] pieces = board.getPieces();
         Board copiedBoard = new Board();
+
+        copiedBoard.setPlayingSideColor(board.getPlayingSideColor());
+        copiedBoard.setCastlingStatuses(board.getCastlingStatuses());
+        copiedBoard.setEnPassantPosition(board.getEnPassanPosition());
 
         for (Piece piece : pieces)
         {
             Piece copiedPiece = new Piece(piece.getPosition(), piece.getType(), piece.getColor());
             BoardManager.addPiece(copiedBoard, copiedPiece);
+            copiedPiece.setHasMoved(piece.getHasMoved());
+            copiedPiece.setIsInCheck(piece.getIsInCheck());
         }
 
         return copiedBoard;
@@ -60,9 +74,21 @@ public class BoardManager
      * @param newPosition The position where it should move to
      * @return <i>true</i> if the piece was moved, <i>false</i> if the piece could not be moved. This may be the case if the move is considered illegal according to chess rules
      */
-    public static boolean movePiece (Board board, Position oldPosition, Position newPosition)
+    public static boolean movePiece(Board board, Position oldPosition, Position newPosition)
     {
-        return movePiece(board, BoardManager.getPieceAtPosition(board, oldPosition), newPosition);
+        return BoardManager.movePiece(board, BoardManager.getPieceAtPosition(board, oldPosition), newPosition);
+    }
+
+    /**
+     * Moves a piece according to standard chess notation taken from <i>moveString</i>
+     * @param board The board that the piece is on
+     * @param moveString The current position of the piece
+     * @return <i>true</i> if the piece was moved, <i>false</i> if the piece could not be moved. This may be the case if the move is considered illegal according to chess rules
+     */
+    public static boolean movePiece(Board board, String moveString)
+    {
+        Move move = MoveManager.getMoveFromString(board, moveString);
+        return BoardManager.movePiece(board, move.getPiece(), move.getPosition());
     }
 
     /**
@@ -72,33 +98,121 @@ public class BoardManager
      * @param newPosition The position where it should move to
      * @return <i>true</i> if the piece was moved, <i>false</i> if the piece could not be moved. This may be the case if the move is considered illegal according to chess rules
      */
-    public static boolean movePiece (Board board, Piece piece, Position newPosition)
+    public static boolean movePiece(Board board, Piece piece, Position newPosition)
     {
         Piece pieceToMove = piece;
         Piece pieceToAttack = BoardManager.getPieceAtPosition(board, newPosition);
 
-        if (pieceToMove == null || !MoveManager.isMoveLegal(board, piece, newPosition))
+        if (piece == null)
+        {
+            throw new PieceNotFoundException();
+        }
+
+        if (!MoveManager.isMoveLegal(board, piece, newPosition)
+            || pieceToMove.getColor() != board.getPlayingSideColor())
         {
             return false;
         }
 
-        if (pieceToAttack == null)
+        if (pieceToAttack != null && pieceToAttack.getColor() == pieceToMove.getColor())
         {
-            pieceToMove.setPosition(newPosition);
-
-            return true;
+            return false;
         }
-        else if (pieceToAttack.getColor() != pieceToMove.getColor())
+
+        if (pieceToAttack != null)
         {
             BoardManager.removePiece(board, pieceToAttack);
-            pieceToMove.setPosition(newPosition);
+        }
 
-            return true;
-        }
-        else
+        // If the move is a castling move...
+        if (pieceToMove.getType() == PieceType.KING
+            && (newPosition.getFile() > pieceToMove.getPosition().getFile() + 1
+            || newPosition.getFile() < pieceToMove.getPosition().getFile() - 1))
         {
-            return false;
+            // ...also move the rook
+            BoardManager.getPieceAtPosition(board, new Position(pieceToMove.getPosition(), newPosition.getFile() > 5 ? 3 : -4, 0)).setPosition(new Position(pieceToMove.getPosition(), newPosition.getFile() > 5 ? 1 : -1, 0));
         }
+
+        // Check if a pawn moved two spaces
+        if (pieceToMove.getType() == PieceType.PAWN
+            && (pieceToMove.getPosition().getRank() > newPosition.getRank() + 1
+                || pieceToMove.getPosition().getRank() < newPosition.getRank() - 1))
+        {
+            // Note that the pawn can now be attacked through en passant
+            board.setEnPassantPosition(board.getPlayingSideColor() == Color.WHITE ? new Position(newPosition, 0, -1) : new Position(newPosition, 0, 1));
+        }
+
+        // FIXME: en passant position never gets removed, should not be a problem is most cases
+
+        // If an en passant position is attacked, remove the pawn that is standing above or below
+        if (Position.equals(newPosition, board.getEnPassanPosition()))
+        {
+            BoardManager.removePiece(board, board.getPlayingSideColor() == Color.WHITE ? new Position(board.getEnPassanPosition(), 0, -1) : new Position(board.getEnPassanPosition(), 0, 1));
+        }
+
+        pieceToMove.setPosition(newPosition);
+        pieceToMove.setHasMoved(true);
+
+        BoardManager.switchPlayingSideColor(board);
+        BoardManager.updateCheckedPiecesStatus(board);
+
+        return true;
+    }
+
+    /**
+     * Updates the board to check if one of the kings is in check
+     * @param board The board that should be updated
+     */
+    public static void updateCheckedPiecesStatus(Board board)
+    {
+        for (Piece piece : board.getPieces())
+        {
+            if (piece.getType() != PieceType.KING)
+            {
+                continue;
+            }
+
+            piece.setIsInCheck(false);
+
+            for (Piece otherPiece : board.getPieces())
+            {
+                if (MoveManager.isMoveLegal(board, otherPiece, piece.getPosition()))
+                {
+                    piece.setIsInCheck(true);
+                }
+            }
+        }
+    }
+
+    /**
+     * Checks whether the king of a side on a board is in check or not
+     * @param board The board that the king is on
+     * @param color The color of the side we want to check
+     * @return <i>true</i> if the king is in check, <i>false</i> if the king is not in check
+     */
+    public static boolean isSideInCheck(Board board, Color color)
+    {
+        BoardManager.updateCheckedPiecesStatus(board);
+
+        for (Piece piece : board.getPieces())
+        {
+            if (piece.getType() == PieceType.KING
+                && piece.getColor() == color)
+            {
+                return piece.getIsInCheck();
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Switches the color of the side that is currently playing
+     * @param board The board we want to switch the color on
+     */
+    public static void switchPlayingSideColor(Board board)
+    {
+        board.setPlayingSideColor(board.getPlayingSideColor() == Color.WHITE ? Color.BLACK : Color.WHITE);
     }
 
     /**
@@ -109,7 +223,7 @@ public class BoardManager
      * @param color The color of the new piece
      * @return <i>true</i> if the piece was added, <i>false</i> if the piece could not be added. This may be because there already is a piece at the specified location
      */
-    public static boolean addPiece (Board board, Position position, PieceType type, Color color)
+    public static boolean addPiece(Board board, Position position, PieceType type, Color color)
     {
         return addPiece(board, new Piece(position, type, color));
     }
@@ -120,7 +234,7 @@ public class BoardManager
      * @param piece The piece that should be added
      * @return <i>true</i> if the piece was added, <i>false</i> if the piece could not be added. This may be because there already is a piece at the specified location
      */
-    public static boolean addPiece (Board board, Piece piece)
+    public static boolean addPiece(Board board, Piece piece)
     {
         Piece[] oldPieces = board.getPieces();
         Piece[] newPieces = new Piece[oldPieces.length + 1];
@@ -145,7 +259,13 @@ public class BoardManager
         return true;
     }
 
-    public static boolean removePiece (Board board, Position position)
+    /**
+     * Removes the piece standing at <i>position</i> from a board
+     * @param board The board the piece is standing on
+     * @param position The position the piece is at
+     * @return <i>true</i> if the piece was removed, <i>false</i> if the piece could not be removed. This may be because there is no piece at the specified location
+     */
+    public static boolean removePiece(Board board, Position position)
     {
         return removePiece(board, BoardManager.getPieceAtPosition(board, position));
     }
@@ -156,7 +276,7 @@ public class BoardManager
      * @param piece The piece that should be removed
      * @return <i>true</i> if the piece was removed, <i>false</i> if the piece could not be removed. This may be because there is no piece at the specified location
      */
-    public static boolean removePiece (Board board, Piece piece)
+    public static boolean removePiece(Board board, Piece piece)
     {
         Piece[] oldPieces = board.getPieces();
         Piece[] newPieces = new Piece[oldPieces.length - 1];
@@ -187,18 +307,15 @@ public class BoardManager
 
     /**
      * Generates a list of pieces from the standard FEN notation
-     * @param FEN The FEN string of the chess position
-     * @return A list of pieces, placed according to the FEN string. May contain <i>null</i> elements
+     * @param FENPart The part of the FEN string that shows the piece position
      */
-    public static void addPiecesFromFEN (Board board, String FEN)
+    public static void addPiecesFromFEN(Board board, String FENPart)
     {
-        String pieceSetupString = FEN.split(" ")[0];
         int file = 0;
         int rank = 7;
 
-        for (char pieceChar : pieceSetupString.toCharArray())
+        for (char pieceChar : FENPart.toCharArray())
         {
-
             //int pieceValue = pieceChar;
             // 47: Slash
             if (pieceChar == 47)
@@ -206,13 +323,11 @@ public class BoardManager
                 continue;
             }
 
-            // 65 - 90: Uppercase letters
-            // 97 - 122: Lowercase letters
-            if ((pieceChar > 64 && pieceChar < 91)
-                || (pieceChar > 96 && pieceChar < 123))
+            // Check if the char is a letter which represents a piece
+            if (StringHelper.isCharLetter(pieceChar))
             {
                 Position position = new Position(file, rank);
-                PieceType type = BoardManager.getTypeFromAbbreviation(pieceChar);
+                PieceType type = StringHelper.getTypeFromAbbreviation(pieceChar);
                 Color color = pieceChar < 91 ? Color.WHITE : Color.BLACK;
 
                 // An invalid character abbriviation was used
@@ -223,8 +338,8 @@ public class BoardManager
 
                 BoardManager.addPiece(board, position, type, color);
             }
-            // 48 - 57: Numbers
-            else if (pieceChar > 47 && pieceChar < 58)
+            // Check if the character is a number which represents empty spaces
+            else if (StringHelper.isCharNumber(pieceChar))
             {
                 int freeSpaces = Integer.parseInt(pieceChar + "");
                 file += freeSpaces - 1;
@@ -246,50 +361,12 @@ public class BoardManager
     }
 
     /**
-     * Gets the piece type that is represented by the given character
-     * @param abbreviation The character that represents the piece type
-     * @return The piece type represented by the character
-     */
-    public static PieceType getTypeFromAbbreviation (char abbreviation)
-    {
-        switch (abbreviation)
-        {
-            case 'R':
-            case 'r':
-                return PieceType.ROOK;
-
-            case 'N':
-            case 'n':
-                return PieceType.KNIGHT;
-
-            case 'B':
-            case 'b':
-                return PieceType.BISHOP;
-
-            case 'Q':
-            case 'q':
-                return PieceType.QUEEN;
-
-            case 'K':
-            case 'k':
-                return PieceType.KING;
-
-            case 'P':
-            case 'p':
-                return PieceType.PAWN;
-
-            default:
-                return null;
-        }
-    }
-
-    /**
      * Gets a piece at a given position
      * @param board The board on which the piece should be located
      * @param position The position of the piece
      * @return The piece at the given position
      */
-    public static Piece getPieceAtPosition (Board board, Position position)
+    public static Piece getPieceAtPosition(Board board, Position position)
     {
         Piece[] pieces = board.getPieces();
 
@@ -304,5 +381,57 @@ public class BoardManager
         }
 
         return null;
+    }
+
+    /**
+     * Gets the currently playing side from a given part of the FEN string and writes the information to <i>board</i>
+     * @param board The board we want to write the information to
+     * @param FENPart The part of the FEN responsible for indicating the currently playing side
+     */
+    public static void setPlayingSideFromFEN(Board board, String FENPart)
+    {
+        board.setPlayingSideColor(FENPart.toCharArray()[0] == 'w' ? Color.WHITE : Color.BLACK);
+    }
+
+    /**
+     * Gets the current castling status from a given part of the FEN string and writes the information to <i>board</i>
+     * @param board The board we want to write the information to
+     * @param FENPart The part of the FEN responsible for indicating the castling status of both sides
+     */
+    public static void setCastlingStatusesFromFEN(Board board, String FENPart)
+    {
+        board.setWhiteCastlingStatus(CastlingStatus.NONE);
+        board.setBlackCastlingStatus(CastlingStatus.NONE);
+
+        if (FENPart.contains("K"))
+        {
+            board.setWhiteCastlingStatus(CastlingStatus.KINGSIDE);
+        }
+        if (FENPart.contains("Q"))
+        {
+            board.setWhiteCastlingStatus(FENPart.contains("K") ? CastlingStatus.KINGANDQUEENSIDE : CastlingStatus.QUEENSIDE);
+        }
+
+        if (FENPart.contains("k"))
+        {
+            board.setBlackCastlingStatus(CastlingStatus.KINGSIDE);
+        }
+        if (FENPart.contains("q"))
+        {
+            board.setWhiteCastlingStatus(FENPart.contains("K") ? CastlingStatus.KINGANDQUEENSIDE : CastlingStatus.QUEENSIDE);
+        }
+    }
+
+    /**
+     * Gets the en passant status from a given part of the FEN string and writes the information to <i>board</i>
+     * @param board The board we want to write the information to
+     * @param FENPart The part of the FEN responsible for indicating the en passant position
+     */
+    public static void setEnPassantPositionFromFend(Board board, String FENPart)
+    {
+        if (!FENPart.equals("-"))
+        {
+            board.setEnPassantPosition(new Position(FENPart));
+        }
     }
 }

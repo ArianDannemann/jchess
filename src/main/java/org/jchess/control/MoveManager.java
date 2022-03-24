@@ -227,10 +227,20 @@ public class MoveManager
         // If the position of the moving piece wasn't specified fully, we get a hint at either file or rank
         FileRankHintType fileRankHint = FileRankHintType.NONE;
 
+        boolean isPromotion = false;
+        PieceType promotionType = PieceType.NONE;
+
         // Remove any character that isn't giving us necessary information
         moveString = moveString.replace("x", "");
         moveString = moveString.replace("+", "");
         moveString = moveString.replace("#", "");
+
+        // Check if the move is a pawn promotion
+        if (moveString.contains("="))
+        {
+            isPromotion = true;
+            promotionType = StringHelper.getTypeFromAbbreviation(moveString.toCharArray()[moveString.toCharArray().length - 1]);
+        }
 
         // Check if the move is a castling move
         if (moveString.equals("O-O") || moveString.equals("O-O-O"))
@@ -248,6 +258,14 @@ public class MoveManager
         }
 
         char[] moveStringChars = moveString.toCharArray();
+
+        // If the move is a promotion...
+        if (isPromotion)
+        {
+            // ...we can safely remove that part of the string
+            moveString = moveString.substring(0, moveStringChars.length - 2);
+            moveStringChars = moveString.toCharArray();
+        }
 
         // Figure out the type of piece to move
         for (char moveStringChar : moveStringChars)
@@ -313,6 +331,12 @@ public class MoveManager
             {
                 movingPiece = piece;
             }
+        }
+
+        // Change the type of the piece if we are promoting
+        if (isPromotion)
+        {
+            movingPiece.setType(promotionType);
         }
 
         // Save the values to the move

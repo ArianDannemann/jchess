@@ -5,6 +5,7 @@ package org.jchess.model;
  */
 public enum PieceType
 {
+    NONE,
     KING,
     QUEEN,
     BISHOP,

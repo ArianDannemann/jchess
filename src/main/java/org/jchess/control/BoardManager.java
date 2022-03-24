@@ -16,6 +16,10 @@ import org.jchess.model.Position;
 public class BoardManager
 {
     /**
+     * TODO: Game end condition
+     */
+
+    /**
      * Generates a board with the standard chess position
      * @return A default chess board
      */

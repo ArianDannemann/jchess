@@ -26,11 +26,6 @@ public class Piece
         return isInCheck;
     }
 
-    public void setIsInCheck(boolean isInCheck)
-    {
-        this.isInCheck = isInCheck;
-    }
-
     public Position getPosition()
     {
         return this.position;
@@ -67,5 +62,15 @@ public class Piece
     public void setHasMoved(boolean hasMoved)
     {
         this.hasMoved = hasMoved;
+    }
+
+    public void setIsInCheck(boolean isInCheck)
+    {
+        this.isInCheck = isInCheck;
+    }
+
+    public void setType(PieceType type)
+    {
+        this.type = type;
     }
 }

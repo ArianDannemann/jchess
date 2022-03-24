@@ -4,14 +4,14 @@
 
 Plans:
 * Add support for special moves
-* Give the user the option to enter next moves via keyboard
 
 Notes:
 * Added support for playing side color
 * Positions can now be entered in chess notation, i.e. e4, d7, ...
-* Added support for castling
+* Added support for castling and pawn promotion
 * Added checks
 * Input moves according to standard chess notation (NOTE: finish special moves)
+* The app will now start by allowing the user to play a complete game of chess
 
 ## Version 0.2
 

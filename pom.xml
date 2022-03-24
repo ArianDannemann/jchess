@@ -6,11 +6,11 @@
 
   <groupId>org.jchess</groupId>
   <artifactId>jchess</artifactId>
-  <version>0.2</version>
+  <version>0.3</version>
 
   <name>jchess</name>
 
-  <url>http://www.ariandannemann.de</url>
+  <url>https://github.com/ArianDannemann/jchess</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

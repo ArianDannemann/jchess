@@ -284,7 +284,7 @@ public class BoardManager
             if (StringHelper.isCharLetter(pieceChar))
             {
                 Position position = new Position(file, rank);
-                PieceType type = BoardManager.getTypeFromAbbreviation(pieceChar);
+                PieceType type = StringHelper.getTypeFromAbbreviation(pieceChar);
                 Color color = pieceChar < 91 ? Color.WHITE : Color.BLACK;
 
                 // An invalid character abbriviation was used
@@ -314,45 +314,6 @@ public class BoardManager
                 file = 0;
                 rank --;
             }
-        }
-    }
-
-    /**
-     * Gets the piece type that is represented by the given character
-     * @param abbreviation The character that represents the piece type
-     * @return The piece type represented by the character
-     */
-    // TODO: Move to StringHelper
-    public static PieceType getTypeFromAbbreviation(char abbreviation)
-    {
-        switch (abbreviation)
-        {
-            case 'R':
-            case 'r':
-                return PieceType.ROOK;
-
-            case 'N':
-            case 'n':
-                return PieceType.KNIGHT;
-
-            case 'B':
-            case 'b':
-                return PieceType.BISHOP;
-
-            case 'Q':
-            case 'q':
-                return PieceType.QUEEN;
-
-            case 'K':
-            case 'k':
-                return PieceType.KING;
-
-            case 'P':
-            case 'p':
-                return PieceType.PAWN;
-
-            default:
-                return null;
         }
     }
 

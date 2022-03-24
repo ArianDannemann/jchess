@@ -256,7 +256,7 @@ public class MoveManager
             // If the char is uppercase...
             if (StringHelper.isCharUppercaseLetter(moveStringChar))
             {
-                movingPieceType = BoardManager.getTypeFromAbbreviation(moveStringChar);
+                movingPieceType = StringHelper.getTypeFromAbbreviation(moveStringChar);
             }
         }
 

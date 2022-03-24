@@ -1,5 +1,7 @@
 package org.jchess.control;
 
+import org.jchess.model.PieceType;
+
 public class StringHelper
 {
     public static boolean isCharUppercaseLetter(char ch)
@@ -20,5 +22,43 @@ public class StringHelper
     public static boolean isCharNumber(char ch)
     {
         return (ch > 47 && ch < 58);
+    }
+
+    /**
+     * Gets the piece type that is represented by the given character
+     * @param abbreviation The character that represents the piece type
+     * @return The piece type represented by the character
+     */
+    public static PieceType getTypeFromAbbreviation(char abbreviation)
+    {
+        switch (abbreviation)
+        {
+            case 'R':
+            case 'r':
+                return PieceType.ROOK;
+
+            case 'N':
+            case 'n':
+                return PieceType.KNIGHT;
+
+            case 'B':
+            case 'b':
+                return PieceType.BISHOP;
+
+            case 'Q':
+            case 'q':
+                return PieceType.QUEEN;
+
+            case 'K':
+            case 'k':
+                return PieceType.KING;
+
+            case 'P':
+            case 'p':
+                return PieceType.PAWN;
+
+            default:
+                return null;
+        }
     }
 }

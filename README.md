@@ -15,19 +15,27 @@ All you need to do in order to start using JChess is to download the latest buil
 
 After that you can create a chess board in your java application by creating a new instance of the `Board` class like this:
 
-`Board my_board = new Board();`
+```
+Board my_board = new Board();
+```
 
 You can always show the current state of the chess board in the console by calling
 
-`UI.printBoard(my_board);`
+```
+UI.printBoard(my_board);
+```
 
 Since there are no pieces on a board by default, it makes sence to generate the board using the `BoardManager` class, which will also allow you to interact with the board in all kinds of ways.
 Let's print out the board afterwards to see the change:
 
-`my_board = BoardManager.generateBoard();`
+```
+my_board = BoardManager.generateBoard();
+UI.printBoard(my_board);
+```
 
-`UI.printBoard(my_board);`
 
 To move pieces around, you can simply enter standard chess notated moves like this:
 
-`BoardManager.movePiece(Board board, new Position("e4"));`
+```
+BoardManager.movePiece(Board board, new Position("e4"));
+```

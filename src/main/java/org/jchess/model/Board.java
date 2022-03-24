@@ -5,15 +5,10 @@ package org.jchess.model;
  */
 public class Board
 {
-    // A list of all the pieces on the board
-    private Piece[] pieces = new Piece[0];
-    private Color playingSideColor = Color.WHITE;
-    private CastlingStatus[] castlingStatuses = { CastlingStatus.KINGANDQUEENSIDE, CastlingStatus.KINGANDQUEENSIDE };
-
-    public void setPieces(Piece[] pieces)
-    {
-        this.pieces = pieces;
-    }
+    private Piece[] pieces = new Piece[0]; // a list of all pieces on the board
+    private Color playingSideColor = Color.WHITE; // which color is currently moving
+    private CastlingStatus[] castlingStatuses = { CastlingStatus.KINGANDQUEENSIDE, CastlingStatus.KINGANDQUEENSIDE }; // which side can castle in what way
+    private Position enPassantPosition; // only set if a pawn moved two spaces, can be attacked by another pawn
 
     public Piece[] getPieces()
     {
@@ -25,19 +20,9 @@ public class Board
         return playingSideColor;
     }
 
-    public void setPlayingSideColor(Color playingSideColor)
-    {
-        this.playingSideColor = playingSideColor;
-    }
-
     public CastlingStatus[] getCastlingStatuses()
     {
         return this.castlingStatuses;
-    }
-
-    public void setCastlingStatuses(CastlingStatus[] castlingStatuses)
-    {
-        this.castlingStatuses = castlingStatuses;
     }
 
     public CastlingStatus getWhiteCastlingStatus()
@@ -45,18 +30,43 @@ public class Board
         return this.castlingStatuses[0];
     }
 
-    public void setWhiteCastlingStatus(CastlingStatus castlingStatus)
-    {
-        this.castlingStatuses[0] = castlingStatus;
-    }
-
     public CastlingStatus getBlackCastlingStatus()
     {
         return this.castlingStatuses[1];
     }
 
+    public Position getEnPassanPosition()
+    {
+        return this.enPassantPosition;
+    }
+
     public void setBlackCastlingStatus(CastlingStatus castlingStatus)
     {
         this.castlingStatuses[1] = castlingStatus;
+    }
+
+    public void setPieces(Piece[] pieces)
+    {
+        this.pieces = pieces;
+    }
+
+    public void setPlayingSideColor(Color playingSideColor)
+    {
+        this.playingSideColor = playingSideColor;
+    }
+
+    public void setCastlingStatuses(CastlingStatus[] castlingStatuses)
+    {
+        this.castlingStatuses = castlingStatuses;
+    }
+
+    public void setWhiteCastlingStatus(CastlingStatus castlingStatus)
+    {
+        this.castlingStatuses[0] = castlingStatus;
+    }
+
+    public void setEnPassantPosition(Position enPassantPosition)
+    {
+        this.enPassantPosition = enPassantPosition;
     }
 }

@@ -36,11 +36,12 @@ public class BoardManager
     public static Board generateBoard(String FEN)
     {
         Board board = new Board();
-        String[] FENparts = FEN.split(" ");
+        String[] FENParts = FEN.split(" ");
 
-        BoardManager.addPiecesFromFEN(board, FENparts[0]);
-        BoardManager.setPlayingSideFromFEN(board, FENparts[1]);
-        BoardManager.setCastlingStatusesFromFEN(board, FENparts[2]);
+        BoardManager.addPiecesFromFEN(board, FENParts[0]);
+        BoardManager.setPlayingSideFromFEN(board, FENParts[1]);
+        BoardManager.setCastlingStatusesFromFEN(board, FENParts[2]);
+        BoardManager.setEnPassantPositionFromFend(board, FENParts[3]);
 
         return board;
     }
@@ -57,6 +58,7 @@ public class BoardManager
 
         copiedBoard.setPlayingSideColor(board.getPlayingSideColor());
         copiedBoard.setCastlingStatuses(board.getCastlingStatuses());
+        copiedBoard.setEnPassantPosition(board.getEnPassanPosition());
 
         for (Piece piece : pieces)
         {
@@ -127,6 +129,21 @@ public class BoardManager
         {
             // ...also move the rook
             BoardManager.getPieceAtPosition(board, new Position(pieceToMove.getPosition(), newPosition.getFile() > 5 ? 3 : -4, 0)).setPosition(new Position(pieceToMove.getPosition(), newPosition.getFile() > 5 ? 1 : -1, 0));
+        }
+
+        // Check if a pawn moved two spaces
+        if (pieceToMove.getType() == PieceType.PAWN
+            && (pieceToMove.getPosition().getRank() > newPosition.getRank() + 1
+                || pieceToMove.getPosition().getRank() < newPosition.getRank() - 1))
+        {
+            // Note that the pawn can now be attacked through en passant
+            board.setEnPassantPosition(board.getPlayingSideColor() == Color.WHITE ? new Position(newPosition, 0, -1) : new Position(newPosition, 0, 1));
+        }
+
+        // If an en passant position is attacked, remove the pawn that is standing above or below
+        if (Position.equals(newPosition, board.getEnPassanPosition()))
+        {
+            BoardManager.removePiece(board, board.getPlayingSideColor() == Color.WHITE ? new Position(board.getEnPassanPosition(), 0, -1) : new Position(board.getEnPassanPosition(), 0, 1));
         }
 
         pieceToMove.setPosition(newPosition);
@@ -370,6 +387,14 @@ public class BoardManager
         if (FENPart.contains("q"))
         {
             board.setWhiteCastlingStatus(FENPart.contains("K") ? CastlingStatus.KINGANDQUEENSIDE : CastlingStatus.QUEENSIDE);
+        }
+    }
+
+    public static void setEnPassantPositionFromFend(Board board, String FENPart)
+    {
+        if (!FENPart.equals("-"))
+        {
+            board.setEnPassantPosition(new Position(FENPart));
         }
     }
 }

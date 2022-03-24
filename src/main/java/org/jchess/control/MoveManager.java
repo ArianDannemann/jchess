@@ -17,9 +17,6 @@ import org.jchess.model.Position;
  */
 public class MoveManager
 {
-    // TODO: Add support for special moves like:
-    // promoting, en-passant
-
     /**
      * Checks if a move is considere legal according to chess ruels
      * @param board The board the move is played on
@@ -192,11 +189,13 @@ public class MoveManager
                     }
                 }
 
-                if (BoardManager.getPieceAtPosition(board, leftAttackPosition) != null)
+                if (BoardManager.getPieceAtPosition(board, leftAttackPosition) != null
+                    || Position.equals(leftAttackPosition, board.getEnPassanPosition()))
                 {
                     tryAddLegalMove(board, legalMoves, leftAttackPosition, piece.getColor());
                 }
-                if (BoardManager.getPieceAtPosition(board, rightAttackPosition) != null)
+                if (BoardManager.getPieceAtPosition(board, rightAttackPosition) != null
+                    || Position.equals(rightAttackPosition, board.getEnPassanPosition()))
                 {
                     tryAddLegalMove(board, legalMoves, rightAttackPosition, piece.getColor());
                 }
@@ -216,7 +215,6 @@ public class MoveManager
         return result;
     }
 
-    // TODO: Add support for promotion
     public static Move getMoveFromString(Board board, String moveString)
     {
         Move move = new Move();

@@ -5,6 +5,9 @@ public class Move
     private Piece piece;
     private Position position;
 
+    private boolean isEnPassant = false;
+    private Position enPassantPosition;
+
     public Move()
     {
         this.setPiece(null);
@@ -22,18 +25,38 @@ public class Move
         return position;
     }
 
-    public void setPosition(Position position)
-    {
-        this.position = position;
-    }
-
     public Piece getPiece()
     {
         return piece;
     }
 
+    public boolean getIsEnPassant()
+    {
+        return isEnPassant;
+    }
+
+    public Position getEnPassantPosition()
+    {
+        return enPassantPosition;
+    }
+
+    public void setPosition(Position position)
+    {
+        this.position = position;
+    }
+
     public void setPiece(Piece piece)
     {
         this.piece = piece;
+    }
+
+    public void setIsEnPassant(boolean isEnPassant)
+    {
+        this.isEnPassant = isEnPassant;
+    }
+
+    public void setEnPassantPosition(Position enPassantPosition)
+    {
+        this.enPassantPosition = enPassantPosition;
     }
 }

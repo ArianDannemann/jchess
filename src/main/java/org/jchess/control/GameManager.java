@@ -27,6 +27,7 @@ public class GameManager
             {
                 String input;
 
+                UI.println("En passant position: " + board.getEnPassanPosition().toString());
                 UI.print("Your input: ");
                 input = scanner.nextLine();
 

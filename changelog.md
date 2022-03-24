@@ -2,15 +2,12 @@
 
 ## NEXT: Version 0.3
 
-Plans:
-* Add support for special moves
-
 Notes:
-* Added support for playing side color
+* Added support for playing taking turns
 * Positions can now be entered in chess notation, i.e. e4, d7, ...
-* Added support for castling and pawn promotion
+* Added support for castling, pawn promotion and en passant
 * Added checks
-* Input moves according to standard chess notation (NOTE: finish special moves)
+* Input moves according to standard chess notation
 * The app will now start by allowing the user to play a complete game of chess
 
 ## Version 0.2

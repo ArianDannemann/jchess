@@ -142,7 +142,12 @@ public class BoardManager
             board.setEnPassantPosition(board.getPlayingSideColor() == Color.WHITE ? new Position(newPosition, 0, -1) : new Position(newPosition, 0, 1));
         }
 
-        // FIXME: en passant position never gets removed, should not be a problem is most cases
+        // If a piece except a pawn moves...
+        if (pieceToMove.getType() != PieceType.PAWN)
+        {
+            // ...remove the en passant position from the board
+            board.setEnPassantPosition(null);
+        }
 
         // If an en passant position is attacked, remove the pawn that is standing above or below
         if (Position.equals(newPosition, board.getEnPassanPosition()))

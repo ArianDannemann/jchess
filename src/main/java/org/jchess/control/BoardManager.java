@@ -144,8 +144,11 @@ public class BoardManager
             board.setEnPassantPosition(board.getPlayingSideColor() == Color.WHITE ? new Position(newPosition, 0, -1) : new Position(newPosition, 0, 1));
         }
 
-        // If a piece except a pawn moves...
-        if (pieceToMove.getType() != PieceType.PAWN)
+        // If a piece except a pawn moves or a pawn moved less than two spaces...
+        if (pieceToMove.getType() != PieceType.PAWN
+            || (pieceToMove.getType() == PieceType.PAWN
+                && pieceToMove.getPosition().getRank() != newPosition.getRank() + 2
+                && pieceToMove.getPosition().getRank() != newPosition.getRank() - 2))
         {
             // ...remove the en passant position from the board
             board.setEnPassantPosition(null);
@@ -293,21 +296,30 @@ public class BoardManager
         int c = 0;
         boolean removedPiece = false;
 
+        // Check if there is a piece at the specified position
+        if (piece == null)
+        {
+            throw new PieceNotFoundException();
+        }
+
         for (i = 0; i < oldPieces.length; i ++)
         {
-            // Check if a piece is already standing at the new position
+            // If a piece is not standing at the position where it should be removed...
             if (!Position.equals(oldPieces[i].getPosition(), pieceToRemove.getPosition()))
             {
+                // ...add it to the new array
                 newPieces[c] = oldPieces[i];
 
                 c ++;
             }
             else
             {
+                // ...otherwise, set the removed piece to true
                 removedPiece = true;
             }
         }
 
+        // Update the board
         board.setPieces(newPieces);
 
         return removedPiece;
@@ -440,6 +452,10 @@ public class BoardManager
         if (!FENPart.equals("-"))
         {
             board.setEnPassantPosition(new Position(FENPart));
+        }
+        else
+        {
+            board.setEnPassantPosition(null);
         }
     }
 

@@ -7,12 +7,18 @@ public class Board
 {
     private Piece[] pieces = new Piece[0]; // a list of all pieces on the board
     private Color playingSideColor = Color.WHITE; // which color is currently moving
+    private int movesPlayed = 0; // how many moves have been played
     private CastlingStatus[] castlingStatuses = { CastlingStatus.KINGANDQUEENSIDE, CastlingStatus.KINGANDQUEENSIDE }; // which side can castle in what way
     private Position enPassantPosition; // only set if a pawn moved two spaces, can be attacked by another pawn
 
     public Piece[] getPieces()
     {
         return this.pieces;
+    }
+
+    public int getMovesPlayed()
+    {
+        return movesPlayed;
     }
 
     public Color getPlayingSideColor()
@@ -68,5 +74,10 @@ public class Board
     public void setEnPassantPosition(Position enPassantPosition)
     {
         this.enPassantPosition = enPassantPosition;
+    }
+
+    public void setMovesPlayed(int movesPlayed)
+    {
+        this.movesPlayed = movesPlayed;
     }
 }

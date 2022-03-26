@@ -7,21 +7,41 @@ import org.jchess.model.PieceType;
  */
 public class StringHelper
 {
+    /**
+     * Checks if a character is an uppercase letter
+     * @param ch The character to check
+     * @return True if the character is an uppercase letter, false otherwise
+     */
     public static boolean isCharUppercaseLetter(char ch)
     {
         return (ch > 64 && ch < 91);
     }
 
+    /**
+     * Checks if a character is a lowercase letter
+     * @param ch The character to check
+     * @return True if the character is a lowercase letter, false otherwise
+     */
     public static boolean isCharLowecaseLetter(char ch)
     {
         return (ch > 96 && ch < 123);
     }
 
+    /**
+     * Checks if a character is a letter
+     * @param ch The character to check
+     * @return True if the character is a letter, false otherwise
+     */
     public static boolean isCharLetter(char ch)
     {
         return isCharUppercaseLetter(ch) || isCharLowecaseLetter(ch);
     }
 
+    /**
+     * Checks if a character is a digit
+     * @param ch The character to check
+     * @return True if the character is a digit, false otherwise
+     */
     public static boolean isCharNumber(char ch)
     {
         return (ch > 47 && ch < 58);

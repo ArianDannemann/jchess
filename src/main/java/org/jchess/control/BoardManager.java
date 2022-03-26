@@ -37,7 +37,8 @@ public class BoardManager
         BoardManager.addPiecesFromFEN(board, FENParts[0]);
         BoardManager.setPlayingSideFromFEN(board, FENParts[1]);
         BoardManager.setCastlingStatusesFromFEN(board, FENParts[2]);
-        BoardManager.setEnPassantPositionFromFend(board, FENParts[3]);
+        BoardManager.setEnPassantPositionFromFEN(board, FENParts[3]);
+        BoardManager.setMovesPlayerFromFEN(board, FENParts[5]);
 
         return board;
     }
@@ -55,6 +56,7 @@ public class BoardManager
         copiedBoard.setPlayingSideColor(board.getPlayingSideColor());
         copiedBoard.setCastlingStatuses(board.getCastlingStatuses());
         copiedBoard.setEnPassantPosition(board.getEnPassanPosition());
+        copiedBoard.setMovesPlayed(board.getMovesPlayed());
 
         for (Piece piece : pieces)
         {
@@ -142,7 +144,12 @@ public class BoardManager
             board.setEnPassantPosition(board.getPlayingSideColor() == Color.WHITE ? new Position(newPosition, 0, -1) : new Position(newPosition, 0, 1));
         }
 
-        // FIXME: en passant position never gets removed, should not be a problem is most cases
+        // If a piece except a pawn moves...
+        if (pieceToMove.getType() != PieceType.PAWN)
+        {
+            // ...remove the en passant position from the board
+            board.setEnPassantPosition(null);
+        }
 
         // If an en passant position is attacked, remove the pawn that is standing above or below
         if (Position.equals(newPosition, board.getEnPassanPosition()))
@@ -155,6 +162,7 @@ public class BoardManager
 
         BoardManager.switchPlayingSideColor(board);
         BoardManager.updateCheckedPiecesStatus(board);
+        board.setMovesPlayed(board.getMovesPlayed() + 1);
 
         return true;
     }
@@ -427,11 +435,21 @@ public class BoardManager
      * @param board The board we want to write the information to
      * @param FENPart The part of the FEN responsible for indicating the en passant position
      */
-    public static void setEnPassantPositionFromFend(Board board, String FENPart)
+    public static void setEnPassantPositionFromFEN(Board board, String FENPart)
     {
         if (!FENPart.equals("-"))
         {
             board.setEnPassantPosition(new Position(FENPart));
         }
+    }
+
+    /**
+     * Gets the current halfmove clock from a given part of the FEN string and writes the information to <i>board</i>
+     * @param board The board we want to write the information to
+     * @param FENPart The part of the FEN responsible for indicating the halfmove clock
+     */
+    public static void setMovesPlayerFromFEN(Board board, String FENPart)
+    {
+        board.setMovesPlayed(Integer.parseInt(FENPart));
     }
 }

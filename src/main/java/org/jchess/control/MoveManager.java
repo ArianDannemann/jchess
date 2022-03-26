@@ -351,6 +351,26 @@ public class MoveManager
     }
 
     /**
+     * Checks if a given position is being attacked by the opposite side
+     * @param board The board to check
+     * @param position The position to check
+     * @return True if the position is being attacked, false otherwise
+     */
+    public static boolean isPositionAttacked(Board board, Position position)
+    {
+        for (Piece piece : board.getPieces())
+        {
+            if (piece.getColor() != board.getPlayingSideColor()
+                && MoveManager.isMoveLegal(board, piece, position))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Works like {@link #tryAddLegalMove(Board, ArrayList, Position, Color)} but scans all position in a line from a given origin in a given direction. It will stop scanning once a piece obscure the given path
      * @param board The board on which we want to move
      * @param legalMoves A list of all legal moves so far, this is were the new move will be added to

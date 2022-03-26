@@ -9,6 +9,7 @@ Notes:
 * Added checks
 * Input moves according to standard chess notation
 * The app will now start by allowing the user to play a complete game of chess
+* Keeps track of moves played on any chess board
 
 ## Version 0.2
 

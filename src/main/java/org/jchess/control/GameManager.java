@@ -2,7 +2,6 @@ package org.jchess.control;
 
 import java.util.Scanner;
 
-import org.jchess.exceptions.PieceNotFoundException;
 import org.jchess.model.Board;
 import org.jchess.view.UI;
 

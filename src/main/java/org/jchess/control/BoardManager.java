@@ -170,6 +170,12 @@ public class BoardManager
         return true;
     }
 
+    public static boolean movePieceUCI(Board board, String moveString)
+    {
+        Move move = MoveManager.getUCIMoveFromString(board, moveString);
+        return BoardManager.movePiece(board, move.getPiece(), move.getPosition());
+    }
+
     /**
      * Updates the board to check if one of the kings is in check
      * @param board The board that should be updated

@@ -44,11 +44,12 @@ public class GameManager
                 // Try to move a piece according to the user input
                 try
                 {
-                    BoardManager.movePiece(board, input);
+                    //BoardManager.movePiece(board, input);
+                    BoardManager.movePieceUCI(board, input);
                 }
-                catch (PieceNotFoundException exception)
+                catch (Exception exception)
                 {
-                    UI.println("There is no piece at the specified position!");
+                    UI.println(exception.getMessage());
                     continue;
                 }
 

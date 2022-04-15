@@ -170,6 +170,12 @@ public class BoardManager
         return true;
     }
 
+    /**
+     * Moves a piece according to UCI notation
+     * @param board The board that the piece is on
+     * @param moveString The move string (i.e. "e2e4")
+     * @return <i>true</i> if the piece was moved, <i>false</i> if the piece could not be moved. This may be the case if the move is considered illegal according to chess rules
+     */
     public static boolean movePieceUCI(Board board, String moveString)
     {
         Move move = MoveManager.getUCIMoveFromString(board, moveString);

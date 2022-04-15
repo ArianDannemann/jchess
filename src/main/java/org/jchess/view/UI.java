@@ -36,7 +36,7 @@ public class UI
 
         for (rank = 7; rank > -1; rank --)
         {
-            System.out.print(" " + (rank + 1) + " ");
+            System.out.print(" " + (rank + 1) + "  ");
 
             for (file = 0; file < 8; file ++)
             {
@@ -73,7 +73,7 @@ public class UI
         }
 
         System.out.println(' ');
-        System.out.println("    a b c d e f g h");
+        System.out.println("     a b c d e f g h");
         System.out.println(' ');
 
         System.out.println("Piece count: " + board.getPieces().length);

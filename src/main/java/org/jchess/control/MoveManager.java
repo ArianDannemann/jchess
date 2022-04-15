@@ -215,6 +215,28 @@ public class MoveManager
         return result;
     }
 
+    public static Move getUCIMoveFromString(Board board, String moveString)
+    {
+        Move move = new Move();
+
+        // Get the first two chars
+        String firstTwoChars = moveString.substring(0, 2);
+        // Get the last two chars
+        String lastTwoChars = moveString.substring(2, 4);
+
+        // Get the piece at the first two chars position
+        Piece piece = BoardManager.getPieceAtPosition(board, new Position(firstTwoChars));
+
+        // Get where the piece should move
+        Position destination = new Position(lastTwoChars);
+
+        // Set the values
+        move.setPiece(piece);
+        move.setPosition(destination);
+
+        return move;
+    }
+
     /**
      * Figures out what piece is supposed to move to what position from a given string that follows standard chess notation
      * @param board The board the piece is on
@@ -223,8 +245,8 @@ public class MoveManager
      */
     public static Move getMoveFromString(Board board, String moveString)
     {
-        Move move = new Move();
-        Piece movingPiece = null;
+        Move move = new Move(); // The move to be returned
+        Piece movingPiece = null; // The piece that is moving
         PieceType movingPieceType = PieceType.PAWN; // the type of the piece we want to move
         Position positionToMoveTo; // the position we want to move to
         Position movingPiecePosition = new Position(); // the position of the moving piece (if specified)
@@ -378,7 +400,7 @@ public class MoveManager
      * @param direction The direction in which we want to cast a line trace
      * @param originatingPieceColor The color of the moving piece
      */
-    private static void tryAddLegalMoveLine (Board board, ArrayList<Position> legalMoves, Position origin, Position direction, Color originatingPieceColor)
+    private static void tryAddLegalMoveLine(Board board, ArrayList<Position> legalMoves, Position origin, Position direction, Color originatingPieceColor)
     {
         int i = 0;
 
